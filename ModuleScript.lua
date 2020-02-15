@@ -29,27 +29,51 @@ local Module = {}
 				end		
 			end
 		end		
-
+		plot:WaitForChild("ClickDetector").MaxActivationDistance = 0
 		local respawntime = 5
 		local weeds = plot.Weed:GetChildren()
 		wait(respawntime)
 		for i=1,#weeds do
 			weeds[i].Transparency = 0
 		end
-		plot:WaitForChild("ClickDetector").MaxActivationDistance = 16
+		plot.ClickDetector.MaxActivationDistance = 16
 	end
 
 
 
 	function Module.RakePlant(player, plot, pickedItem)
-		local respawntime = 3
+		local respawntime = 1
 		local weeds = plot.Weed:GetChildren()
 		local count = plot.Racking	
-		plot.ClickDetector.MaxActivationDistance = 0
+		local gui = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Sheet		
+		local timerBar = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Timer
+		local timer = 20
+
+		-- Do racking action
+		Module.HoldRake(player, false)
+		gui.Visible = true  -- put up an invisible Gui to prevent them clicking other stuff during the weeding period
+
+		-- raking timer 
+		timerBar.Visible = true
+		while timer > 0 do
+			timerBar.Size = UDim2.new(0, timerBar.Size.X.Offset - 10, 0, 15)
+			timer = timer - 1
+			wait(0.1)
+		end
+		timerBar.Visible = false
+		timerBar.Size = UDim2.new(0, 200, 0, 15)
+		timer = 20
+
+		-- Hide weeds
 		for i=1,#weeds do
 			weeds[i].Transparency = 1
 		end		
 		count.Value = count.Value -1
+		wait()
+		gui.Visible = false
+		Module.HoldRake(player, true)
+		
+		plot.ClickDetector.MaxActivationDistance = 0
 		wait(respawntime)
 
 		if count.Value <= 0 then
@@ -75,10 +99,13 @@ local Module = {}
 	function Module.checkTruckHere(zone)			
 		local connection = zone.Touched:Connect(function() end)
 		local results = zone:GetTouchingParts()	
+		local rightTruck = true
 		connection:Disconnect()		
 		local check = false
 		for i = 1,#results do	
-			local rightTruck = results[i].Parent.Parent == zone.Parent 	 -- make sure it's the right player's truck 	
+			if zone ~= workspace.Market.SellZone then  -- make sure it's the right player's truck 	
+				local rightTruck = results[i].Parent.Parent == zone.Parent 	
+			end
 			if results[i].Name == "Wheel" and results[i].Parent.Name == "Truck" and rightTruck == true then						
 				check = true					
 			end
@@ -96,5 +123,25 @@ local Module = {}
 	   weld.Part1 = b;
 	   weld.C1 = b.CFrame:inverse()
 	   weld.Parent = a;
+	end
+	
+
+	-- Equip the Rake tool
+	function Module.HoldRake(player, hold)
+		local playerModel = workspace:WaitForChild(player.Name)
+		local humanoid = playerModel:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			if hold == false then
+				local tool = player.Backpack:FindFirstChild("Rake")
+				if tool then			
+					humanoid:EquipTool(tool)
+				end	
+			else
+				local tool = playerModel:FindFirstChild("Rake")
+				if tool then	
+					humanoid:UnequipTools()
+				end			
+			end
+		end
 	end
 return Module

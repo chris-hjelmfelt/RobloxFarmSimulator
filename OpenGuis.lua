@@ -8,6 +8,10 @@ local truckHere = false
 local gameValues = workspace:WaitForChild("GameValues")
 local each = gameValues:GetChildren()  -- list of items 
 
+-- Hide Backpack items
+game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+
+
 function OpenStorage()	
 	invGui.Storage.Visible = true
 	truck.Visible = false
@@ -19,13 +23,13 @@ function OpenStorage()
 		ShowHideSell(false)
 	end
 end
-game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage").OnClientEvent:Connect(OpenStorage)
+game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage").OnClientEvent:Connect(OpenStorage)  -- Comes from PlayerAddRemove
 
 
 function OpenTruck()	
 	truck.Visible = true
 end
-game:GetService("ReplicatedStorage"):WaitForChild("OpenTruck").OnClientEvent:Connect(OpenTruck)
+game:GetService("ReplicatedStorage"):WaitForChild("OpenTruck").OnClientEvent:Connect(OpenTruck)  -- Comes from PlayerAddRemove
 
 
 function OpenMarket()	
@@ -35,7 +39,7 @@ function OpenMarket()
 		marketGui.Market.Visible = true
 	end	
 end
-game:GetService("ReplicatedStorage"):WaitForChild("OpenMarket").OnClientEvent:Connect(OpenMarket)
+game:GetService("ReplicatedStorage"):WaitForChild("OpenMarket").OnClientEvent:Connect(OpenMarket)  -- Comes from Miscellanious
 
 
 function OpenHelp()
@@ -55,7 +59,7 @@ function OpenUpgrades(playerLevel)
 	end
 	upgradeGui.Visible = true
 end
-game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgrades").OnClientEvent:Connect(OpenUpgrades)
+game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgrades").OnClientEvent:Connect(OpenUpgrades)  -- Comes from PlayerAddRemove
 
 
 -- Show or Hide button to open truck inventory and sell buttons in Storage Gui

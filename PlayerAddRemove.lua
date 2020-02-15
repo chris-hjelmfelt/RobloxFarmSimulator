@@ -116,55 +116,61 @@ end
 
 
 
+
+players.PlayerAdded:Connect(function(player)
+	farm = workspace:WaitForChild('Jaylah_EverstarFarm')
 --[[
-    players.PlayerAdded:Connect(function(player)
-    	print(player.Name .. " joined the game!")
-		local farm = serverStorage.Farm:Clone()
-		farm.Parent = workspace
-		farm.Name = playerName .. "_Farm"
-		farm.Owner.Value = player.Name
-
-		-- AddPlayerValues is its own script
-
-
-		-- farm tile clickdetectors 
-		local plot1 = farm:WaitForChild('FarmTiles'):GetChildren()
-		SetClickDetectors(plot1)
-		-- storage clickdetector
-		farm:FindFirstChild("Storage").ClickDetector.mouseClick:connect(OpenStorage);
-		-- truck clickdetector
-		farm:FindFirstChild("Truck").Cargo.ClickDetector.mouseClick:connect(OpenTruck);
-		-- orderboard clickdetector
-		farm:FindFirstChild("OrderBoard").ClickDetector.mouseClick:connect(OpenOrders);
-		-- Upgrade clickdetector
-		farm:FindFirstChild("Button").ClickDetector.mouseClick:connect(BuyUpgrade);
-		-- Upgrade clickdetector
-		farm:FindFirstChild("House").LightSwitch.ClickDetector.mouseClick:connect(LightSwitch;
-
-			
-		-- Show starting values in inventory
-		local inventory = player.PlayerGui:WaitForChild("InventoryGui")
-		local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
-		local list = inventory.Storage:GetChildren()
-		for i = 1,#list do	
-			if list[i].Name ~= 'Title' and list[i].Name ~= 'Ready' then
-				local invItem = inventory.Storage:FindFirstChild(list[i].Name).Amount
-				invItem.Text = values:WaitForChild(list[i].Name).Value
-			end
-		end
-    end)
-     
-
-    players.PlayerRemoving:Connect(function(player)
-    	print(player.Name .. " left the game!")
-		local findFarms = workspace:GetChildren()
-		for i = 1,#findFarms do
-			if findFarms[i].Name == "Farm" and findFarms[i].Owner.Value == player.Name then
-				findFarms[i]:Destroy()
-			end
-		end		
-    end)
+	local farm = serverStorage.Farm:Clone()
+	farm.Parent = workspace
+	farm.Name = playerName .. "_Farm"
+	farm.Owner.Value = player.Name
 --]]
+
+	-- AddPlayerValues is its own script
+
+	-- farm tile clickdetectors 
+	local plot1 = farm:WaitForChild('FarmTiles')
+	SetClickDetectors(plot1)
+	-- storage clickdetector
+	farm:FindFirstChild("Storage").ClickDetector.mouseClick:connect(OpenStorage);
+	-- truck clickdetector
+	farm:FindFirstChild("Truck").ClickDetector.mouseClick:connect(OpenTruck);
+	-- orderboard clickdetector
+	farm:FindFirstChild("Orderboard").ClickDetector.mouseClick:connect(OpenOrders);
+	-- Upgrade clickdetector
+	farm:FindFirstChild("Button").ClickDetector.mouseClick:connect(BuyUpgrade);
+	-- Upgrade clickdetector
+	farm:FindFirstChild("House").LightSwitch.ClickDetector.mouseClick:connect(LightSwitch);
+
+	
+
+	-- Show starting values in inventory
+	local inventory = player.PlayerGui:WaitForChild("InventoryGui")
+	local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
+	local list = inventory.Storage.Items:GetChildren()
+	for i = 1,#list do	
+		if list[i].Name ~= 'Title' and list[i].Name ~= 'Ready' then
+			local invItem = inventory.Storage.Items:FindFirstChild(list[i].Name).Amount
+			invItem.Text = values:WaitForChild(list[i].Name).Value
+		end
+	end
+
+	-- Put player's name on their truck
+	farm:FindFirstChild("Truck").Wood.Sign1.SurfaceGui.NameText.Text = player.Name
+	farm:FindFirstChild("Truck").Wood.Sign2.SurfaceGui.NameText.Text = player.Name
+	
+end)
+ 
+
+players.PlayerRemoving:Connect(function(player)
+	local findFarms = workspace:GetChildren()
+	for i = 1,#findFarms do
+		if findFarms[i].Name == "Farm" and findFarms[i].Owner.Value == player.Name then
+			findFarms[i]:Destroy()
+		end
+	end		
+end)
+
 
 
 function LightSwitch(player)
@@ -183,7 +189,6 @@ end
 
 
 function SetClickDetectors(farmPlot)
-	-- farm tiles clickdetectors (testing)
 	local plot = farmPlot:GetChildren()
 	for c = 1,#plot do
 		if plot[c].Name == "Dirt Tile" then 		
@@ -191,21 +196,6 @@ function SetClickDetectors(farmPlot)
 		end
 	end
 end
-
-
--- farm tiles clickdetectors (testing)
-SetClickDetectors(farmPlot1)
--- storage clickdetector  (testing)
-farm:FindFirstChild("Storage").ClickDetector.mouseClick:connect(OpenStorage);
--- truck clickdetector  (testing)
-farm:FindFirstChild("Truck").Cargo.ClickDetector.mouseClick:connect(OpenTruck);
--- orderboard clickdetector  (testing)
-farm:FindFirstChild("Orderboard").ClickDetector.mouseClick:connect(OpenOrders);
--- Upgrade clickdetector  (testing)
-farm:FindFirstChild("Button").ClickDetector.mouseClick:connect(BuyUpgrade);
--- Upgrade clickdetector  (testing)
-farm:FindFirstChild("House").LightSwitch.ClickDetector.mouseClick:connect(LightSwitch);
-
 
 
 

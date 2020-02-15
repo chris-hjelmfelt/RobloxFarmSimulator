@@ -1,4 +1,6 @@
 
+
+
 -----------------
 -- Market
 -----------------
@@ -24,6 +26,5 @@ function ChangePlayerValue(player, item, quantity, addBool)
 	end
 end
 game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue").OnServerEvent:Connect(ChangePlayerValue) -- this comes from PickVeggies localscript both HarvestPlants() and ChooseSeeds()
-
 
 

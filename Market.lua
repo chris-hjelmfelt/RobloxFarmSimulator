@@ -8,10 +8,9 @@ local zone = workspace:WaitForChild(player.Name .."Farm").LoadingZone
 -- Sell the items in the basket
 function SellVeggies()
 	marketGui.Market.Visible = false
-	local sold = truck:GetChildren()
-	
+	local sold = truck.Items:GetChildren()	
 	for i=1,#sold do
-		if sold[i].ClassName == "TextLabel" and tonumber(sold[i].Amount.Text) > 0 then
+		if sold[i].ClassName == "TextLabel" and (tonumber(sold[i].Amount.Text) > 0) then
 			local price = workspace.GameValues:FindFirstChild(sold[i].Text).Value  -- find sale price of the item
 			local addMoney = sold[i].Amount.Text * price
 			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", addMoney, true)
@@ -31,7 +30,7 @@ function TransferToTruck()
 		local textBoxes = invGui.Storage.Items:GetChildren()
 		for i = 1,#textBoxes do
 			if tonumber(textBoxes[i].TextBox.Text) and tonumber(textBoxes[i].TextBox.Text) > 0 then -- make sure user only entered numbers
-				if (textBoxes[i]:FindFirstChild("Amount").Text >= textBoxes[i].TextBox.Text) then  -- if they have the items
+				if (tonumber(textBoxes[i]:FindFirstChild("Amount").Text) >= tonumber(textBoxes[i].TextBox.Text)) then  -- if they have the items
 					textBoxes[i]:FindFirstChild("Amount").Text = textBoxes[i]:FindFirstChild("Amount").Text - textBoxes[i].TextBox.Text
 					truck.Items:FindFirstChild(textBoxes[i].Name).Amount.Text = truck.Items:FindFirstChild(textBoxes[i].Name).Amount.Text + textBoxes[i].TextBox.Text
 					textBoxes[i].TextBox.Text = 0
