@@ -3,7 +3,7 @@ local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local marketGui = player.PlayerGui:WaitForChild("MarketGui")
 local truck = invGui.Truck
 local truckHere = false
-local zone = workspace:WaitForChild(player.Name .."Farm").LoadingZone
+local helperModule = require(workspace.ModuleScript)
 
 -- Sell the items in the basket
 function SellVeggies()
@@ -24,8 +24,8 @@ marketGui.Market.Sell.MouseButton1Click:Connect(SellVeggies)
 
 -- Put items from storage into the basket to go to market
 function TransferToTruck()
-	local helperModule = require(workspace.ModuleScript)
-	truckHere = helperModule.checkTruckHere(zone)
+	local zone = workspace:FindFirstChild(player.Name .. "_Farm").LoadingZone
+	truckHere = helperModule.checkTruckHere(player, zone)
 	if truckHere == true then
 		local textBoxes = invGui.Storage.Items:GetChildren()
 		for i = 1,#textBoxes do
@@ -45,8 +45,8 @@ invGui.Storage.Ready.MouseButton1Click:Connect(TransferToTruck)
 
 -- Move items from truck into storage
 function TransferToTruck()
-	local helperModule = require(workspace.ModuleScript)
-	truckHere = helperModule.checkTruckHere(zone)
+	local zone = workspace:FindFirstChild(player.Name .. "_Farm").LoadingZone
+	truckHere = helperModule.checkTruckHere(player, zone)
 	if truckHere == true then
 		local cargo = invGui.Truck.Items:GetChildren()
 		for j = 1,#cargo do

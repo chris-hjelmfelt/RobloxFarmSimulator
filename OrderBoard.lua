@@ -1,10 +1,12 @@
 local player = game.Players.LocalPlayer
-local orderGui = player.PlayerGui:WaitForChild("FarmGuis"):WaitForChild("OrderBoard")
+local orderGui = player.PlayerGui:WaitForChild("OrderGui"):WaitForChild("OrderBoard")
 local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
 local gameValues = workspace:WaitForChild("GameValues")
 local orderTimer1 = 0  -- timer for a new order to appear
 local orderTimer2 = 0
 local orderTimer3 = 0
+local orderTimer4 = 0
+local orderTimer5 = 0
 local timerLength = 30
 local customOrderBonus = 1.5
 
@@ -48,6 +50,8 @@ end
 orderGui.Order1.Done.MouseButton1Click:Connect(function() SendOrder("1")end)
 orderGui.Order2.Done.MouseButton1Click:Connect(function() SendOrder("2")end)
 orderGui.Order3.Done.MouseButton1Click:Connect(function() SendOrder("3")end)
+orderGui.Order4.Done.MouseButton1Click:Connect(function() SendOrder("4")end)
+orderGui.Order5.Done.MouseButton1Click:Connect(function() SendOrder("5")end)
 
 
 -- See what items are in storage and show checkmarks and Done button
@@ -92,8 +96,8 @@ function CreateNewOrder(num)
 		randItem2 = math.random(1,numItemsAvailable)
 		safety = safety +1
 	end
-	local randAmount1 = math.random(1,6)  -- quantity needed
-	local randAmount2 = math.random(1,6)
+	local randAmount1 = math.random(3,20) * 2  -- quantity needed
+	local randAmount2 = math.random(3,20) * 2
 	local item1 = orderGui:FindFirstChild(orderNum).Item1
 	local amount1 = orderGui:FindFirstChild(orderNum).Amount1	
 	local item2 = orderGui:FindFirstChild(orderNum).Item2
@@ -120,6 +124,8 @@ end
 CreateNewOrder("1")
 CreateNewOrder("2")
 CreateNewOrder("3")
+CreateNewOrder("4")
+CreateNewOrder("5")
 
 -- Keep Orderboard Gui updated
 while true do
@@ -127,6 +133,8 @@ while true do
 	CheckOrderStatus("1")
 	CheckOrderStatus("2")
 	CheckOrderStatus("3")
+	CheckOrderStatus("4")
+	CheckOrderStatus("5")
 	-- Add a new order in a blank space after a wait time
 	if orderGui.Order1.Visible == false then
 		if orderTimer1 <= 0 then
@@ -147,6 +155,20 @@ while true do
 			CreateNewOrder("3")
 		else
 			orderTimer3 = orderTimer3 - 1
+		end
+	end
+	if orderGui.Order4.Visible == false then
+		if orderTimer4 <= 0 then
+			CreateNewOrder("4")
+		else
+			orderTimer4 = orderTimer4 - 1
+		end
+	end
+	if orderGui.Order5.Visible == false then
+		if orderTimer5 <= 0 then
+			CreateNewOrder("5")
+		else
+			orderTimer5 = orderTimer5 - 1
 		end
 	end
 	wait(1)

@@ -2,21 +2,21 @@ local player = game.Players.LocalPlayer
 local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local marketGui = player.PlayerGui:WaitForChild("MarketGui")
 local helpGui = player.PlayerGui:WaitForChild("HelpGui")
-local zone = workspace:WaitForChild(player.Name .."Farm").LoadingZone
 local truck = invGui.Truck
 local truckHere = false
 local gameValues = workspace:WaitForChild("GameValues")
 local each = gameValues:GetChildren()  -- list of items 
+local helperModule = require(workspace.ModuleScript)
 
 -- Hide Backpack items
 game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 
 
 function OpenStorage()	
+	local zone = workspace:FindFirstChild(player.Name .. "_Farm").LoadingZone
 	invGui.Storage.Visible = true
-	truck.Visible = false
-	local helperModule = require(workspace.ModuleScript)
-	truckHere = helperModule.checkTruckHere(zone)
+	truck.Visible = false	
+	truckHere = helperModule.checkTruckHere(player, zone)
 	if truckHere == true then
 		ShowHideSell(true)
 	else
@@ -33,8 +33,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("OpenTruck").OnClientEvent:Con
 
 
 function OpenMarket()	
-	local helperModule = require(workspace.ModuleScript)
-	truckHere = helperModule.checkTruckHere(workspace.Market.SellZone)
+	truckHere = helperModule.checkTruckHere(player, workspace.Market.SellZone.Zone)
 	if truckHere == true then
 		marketGui.Market.Visible = true
 	end	

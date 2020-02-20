@@ -1,68 +1,66 @@
     local players = game:GetService("Players")	
 	local serverStorage = game:GetService("ServerStorage")
-    local farm = workspace:WaitForChild('Jaylah_EverstarFarm')
-	local farmPlot1 = farm:WaitForChild('FarmTiles')
 	local upgradeArray = {5,10,15,20,25,30,35,40,45,50} -- money needed for the next level
 	local playerLevel = nil
+	local helperModule = require(workspace.ModuleScript)
 
 -----------------
 -- Farm Tiles
 -----------------
-function collectVeggie(player, plot)	
-	local helperModule = require(workspace.ModuleScript)
-	if plot.Plant.Leaf.Transparency == 0 then
-		helperModule.PickPlant(player, plot)	-- pick them
-	elseif plot.Weed.Weed.Transparency == 0 then	
-		helperModule.RakePlant(player, plot)	-- rake them
-	else
-		game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds"):FireClient(player, plot)  -- Goes to PickVeggies localScript ChooseSeeds()
-	end	
+function collectVeggie(player, plot)
+	if player.Name == plot.Parent.Parent:FindFirstChild("Owner").Value then
+		if plot.Plant.Leaf.Transparency == 0 then
+			helperModule.PickPlant(player, plot)	-- pick them
+		elseif plot.BrickColor.Name == "Brown" then			
+			helperModule.WaterPlant(player, plot)			
+		elseif plot.Weed.Weed.Transparency == 0 then	
+			helperModule.RakePlant(player, plot)	-- rake them
+		else
+			game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds"):FireClient(player, plot)  -- Goes to PickVeggies localScript ChooseSeeds()
+		end	
+	end
 end
 
 function PlantSeeds(player, plot, seeds)
-	local helperModule = require(workspace.ModuleScript)
-	helperModule.PlantSeeds(player, plot, seeds)  -- Plant Seeds
+	helperModule.PlantSeeds(player, plot, seeds)  -- Plant Seeds	
 end
 game:GetService("ReplicatedStorage"):WaitForChild("PlantSeeds").OnServerEvent:Connect(PlantSeeds) -- Comes from PickVeggies LocalScript SendSeeds()
 
 
 -----------------
 -- Storage
------------------
-function OpenStorage(player)
-	game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis LocalScript
+-----------------  moved into a script inside the storage model (so I can check ownership)
+
+function OpenStorage(player, farm)
+	if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open truck
+		game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis LocalScript
+	end
 end
 
 
------------------
--- Jeep
------------------
-function OpenTruck(player)
-	game:GetService("ReplicatedStorage"):WaitForChild("OpenTruck"):FireClient(player) -- Sends to OpenGuis LocalScript
-end
-
 
 -----------------
--- OrderBoard
------------------
-function OpenOrders(player)
-	game:GetService("ReplicatedStorage"):WaitForChild("OpenOrders"):FireClient(player) -- Sends to OrderBoard LocalScript
+-- Truck
+-----------------   moved into a script inside the truck model (so I can check ownership)
+function OpenTruck(player, farm)
+	if farm:FindFirstChild("Owner").Value == player.Name then
+		game:GetService("ReplicatedStorage"):WaitForChild("OpenTruck"):FireClient(player) -- Sends to OpenGuis LocalScript
+	end
 end
+
 
 
 -----------------
 -- Upgrades
 -----------------
 function CheckForUpgrades()
-	 local child = players:GetChildren()
+	local child = players:GetChildren()
 	for i=1,#child do
-		--local buttons = workspace:WaitForChild("child[i].Name .. "Farm").UpgradeButtons		
+		local farm = workspace:FindFirstChild(child[i].Name .. "_Farm")		
 		playerLevel = players:FindFirstChild(child[i].Name):WaitForChild("PlayerValues").Level
 		local playerMoney = players:FindFirstChild(child[i].Name):WaitForChild("PlayerValues").Money
 		local moneyNeeded = upgradeArray[playerLevel.Value]
 		if playerMoney.Value >= moneyNeeded and playerLevel.Value < 5 then
-			--farm.buttons["Button" .. playerLevel].Transparency = 0
-			--farm.buttons["Button" .. playerLevel].CanCollide = true
 			farm:WaitForChild("Button").Transparency = 0
 			farm.Button.ClickDetector.MaxActivationDistance = 16
 			farm.Button.CanCollide = true
@@ -73,11 +71,9 @@ end
 
 function BuyUpgrade(player)
 	playerLevel = players:FindFirstChild(player.Name):WaitForChild("PlayerValues").Level 
-	--local farm = workspace:FindFirstChild(player.Name .. "Farm")
+	local farm = workspace:FindFirstChild(player.Name .. "Farm")
 
 	-- Hide the button
-	--farm.UpgradeButtons["Button" .. playerLevel].Transparency = 1
-	--farm.UpgradeButtons["Button" .. playerLevel].CanCollide = false
 	farm.Button.Transparency = 1  
 	farm.Button.CanCollide = false
 	farm.Button.Billboard.Cost.Visible = false
@@ -118,30 +114,24 @@ end
 
 
 players.PlayerAdded:Connect(function(player)
-	farm = workspace:WaitForChild('Jaylah_EverstarFarm')
---[[
-	local farm = serverStorage.Farm:Clone()
-	farm.Parent = workspace
-	farm.Name = playerName .. "_Farm"
-	farm.Owner.Value = player.Name
---]]
-
-	-- AddPlayerValues is its own script
+	local farm = PlaceFarm(player)	
 
 	-- farm tile clickdetectors 
 	local plot1 = farm:WaitForChild('FarmTiles')
 	SetClickDetectors(plot1)
+	HidePlants(plot1)
 	-- storage clickdetector
-	farm:FindFirstChild("Storage").ClickDetector.mouseClick:connect(OpenStorage);
+	farm:FindFirstChild("Storage").ClickDetector.mouseClick:connect(function(player) OpenStorage(player, farm) end);
 	-- truck clickdetector
-	farm:FindFirstChild("Truck").ClickDetector.mouseClick:connect(OpenTruck);
-	-- orderboard clickdetector
-	farm:FindFirstChild("Orderboard").ClickDetector.mouseClick:connect(OpenOrders);
+	farm:FindFirstChild("Truck").ClickDetector.mouseClick:connect(function(player) OpenTruck(player, farm) end);	
 	-- Upgrade clickdetector
 	farm:FindFirstChild("Button").ClickDetector.mouseClick:connect(BuyUpgrade);
 	-- Upgrade clickdetector
-	farm:FindFirstChild("House").LightSwitch.ClickDetector.mouseClick:connect(LightSwitch);
+	
+	farm:FindFirstChild("House").LightSwitch.ClickDetector.mouseClick:connect(helperModule.LightSwitch);
 
+	local playerModel = workspace:WaitForChild(player.Name)
+	playerModel.HumanoidRootPart.CFrame = farm.SpawnLocation.CFrame  + Vector3.new(0, 3, 0)
 	
 
 	-- Show starting values in inventory
@@ -155,49 +145,66 @@ players.PlayerAdded:Connect(function(player)
 		end
 	end
 
-	-- Put player's name on their truck
+	-- Put player's name on their truck and farm sign
 	farm:FindFirstChild("Truck").Wood.Sign1.SurfaceGui.NameText.Text = player.Name
 	farm:FindFirstChild("Truck").Wood.Sign2.SurfaceGui.NameText.Text = player.Name
-	
+	farm:FindFirstChild("Sign").Main.SurfaceGui.NameText.Text = player.Name
+
+	-- Show the arrow over their farm
+	farm:FindFirstChild("Arrow").Main.Transparency = 0
+	farm:FindFirstChild("Arrow").Wedge1.Transparency = 0
+	farm:FindFirstChild("Arrow").Wedge2.Transparency = 0
+
+	-- Show Welcome Gui
+	if values.Tutorial.Value == 1 then
+		player.PlayerGui.TutorialGui.Welcome.Visible = true
+		values.Tutorial.Value = 2
+	end
 end)
  
 
 players.PlayerRemoving:Connect(function(player)
 	local findFarms = workspace:GetChildren()
 	for i = 1,#findFarms do
-		if findFarms[i].Name == "Farm" and findFarms[i].Owner.Value == player.Name then
-			findFarms[i]:Destroy()
+		if findFarms[i].Name == player.Name .. "_Farm" and findFarms[i].Owner.Value == player.Name then
+			RemoveFarm(findFarms[i])
 		end
 	end		
 end)
 
 
-
-function LightSwitch(player)
-	local light1 = farm.House.OverheadLight.Light.PointLight
-	local light2 = farm.House.Ceiling.SurfaceLight
-	if player.Name == farm.Owner.Value then  -- only works for farm owner
-		if light2.Enabled == true then
-			light1.Brightness = 0
-			light2.Enabled = false
-		else
-			light1.Brightness = .5
-			light2.Enabled = true
-		end
-	end
-end
-
-
+-- clickdetectors for Farm DirtTiles
 function SetClickDetectors(farmPlot)
 	local plot = farmPlot:GetChildren()
 	for c = 1,#plot do
 		if plot[c].Name == "Dirt Tile" then 		
-			plot[c].ClickDetector.mouseClick:connect(function(player) collectVeggie(player, plot[c]) end);	-- from clickdetectors on Farm Drt Tiles
+			plot[c].ClickDetector.mouseClick:connect(function(player) collectVeggie(player, plot[c]) end);	
 		end
 	end
 end
 
+function PlaceFarm(player)	
+	local spaces = workspace.Farms:GetChildren()
+	local rand = math.random(1,#spaces)
+	local location = spaces[rand].CFrame	
+	spaces[rand]:Destroy()	
+	local newPlot = game.ServerStorage:FindFirstChild("FarmModel"):Clone()
+	newPlot.Parent = workspace
+	newPlot.Name = player.Name .. "_Farm"		
+	newPlot:SetPrimaryPartCFrame(location) 
+	newPlot:FindFirstChild("Owner").Value = player.Name
+	return newPlot
+end
 
+
+function RemoveFarm(plot)
+	local location = plot.PrimaryPart.CFrame	
+	plot:Destroy()	
+	local newPlot = game.ServerStorage:FindFirstChild("Grass"):Clone()
+	newPlot.Parent = workspace.Farms
+	newPlot.Name = "Farm"		
+	newPlot.CFrame = location
+end
 
 -- hide plants on start
 function HidePlants(farmPlot)
@@ -212,11 +219,12 @@ function HidePlants(farmPlot)
 					end
 				end
 			end	
-			plot[c].Racking.Value = 5
+			--plot[c].BrickColor = BrickColor.new("Brown")
+			plot[c].Racking.Value = 1
 		end	
 	end
 end
-HidePlants(farmPlot1)
+
 
 
 -- Put level in a model called leaderstats so it shows up in player list
