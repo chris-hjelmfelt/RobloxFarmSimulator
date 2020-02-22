@@ -7,18 +7,20 @@ local gameValues = workspace:WaitForChild("GameValues")
 local each = gameValues:GetChildren()  -- list of items 
 
 -- get veggie
-local function HarvestPlants(plot)
+local function HarvestPlants(plot)		
 	local item = plot.CropType.Value
 	local storage = invGui.Storage.Items:FindFirstChild(item)	
 	storage.Amount.Text = storage.Amount.Text + 1
-	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer(item, 1, true)  -- goes to Miscellanious script ChangePlayerValue()
+	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Experience", 10, true)  -- goes to Miscellanious script ChangePlayerValues()
+	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(item, 1, true)  -- goes to Miscellanious script ChangePlayerInventory()
+	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Total", 1, true)  -- goes to Miscellanious script ChangePlayerInventory()
 end
 game:GetService("ReplicatedStorage"):WaitForChild("HarvestPlants").OnClientEvent:Connect(HarvestPlants) -- Comes from ModuleScript PickPlant()
 
 
 function ChooseSeeds(plot)
 	local farmGui = player.PlayerGui:WaitForChild("FarmGuis")
-	local playerLevel = players:FindFirstChild(player.Name):WaitForChild("PlayerValues").Level 
+	local available = players:FindFirstChild(player.Name):WaitForChild("PlayerValues").SeedsAvailable
 	local plants = farmGui.PlantSeeds.Items:GetChildren()
 	local seedPosition = 1000
 	for i=1,#plants do  -- Show the seed buttons for the seeds they have available
@@ -27,7 +29,7 @@ function ChooseSeeds(plot)
 			-- local seedPosition = table.find(seedArray, plants[i].Text)  -- search the seedArray to find the level (2 items per level)
 			for j=1,#each do  -- each is at top
 				if each[j].Name == plants[i].Text then
-					if (playerLevel.Value *2 +2) >= j then  
+					if (available.Value) >= j then  
 						plants[i].Visible = true
 					end
 				end

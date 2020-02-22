@@ -13,8 +13,9 @@ function SellVeggies()
 		if sold[i].ClassName == "TextLabel" and (tonumber(sold[i].Amount.Text) > 0) then
 			local price = workspace.GameValues:FindFirstChild(sold[i].Text).Value  -- find sale price of the item
 			local addMoney = sold[i].Amount.Text * price
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", addMoney, true)
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer(sold[i].Name, sold[i].Amount.Text, false)
+			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", addMoney, true)  -- Goes to Misc ChangePlayerValue()
+			game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(sold[i].Name, sold[i].Amount.Text, false)  -- Goes to Misc ChangePlayerInventory()
+			game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Total", sold[i].Amount.Text, false)  -- Goes to Misc ChangePlayerInventory()
 			truck.Items:FindFirstChild(sold[i].Name).Amount.Text = 0
 		end
 	end

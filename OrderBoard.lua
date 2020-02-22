@@ -1,6 +1,7 @@
 local player = game.Players.LocalPlayer
 local orderGui = player.PlayerGui:WaitForChild("OrderGui"):WaitForChild("OrderBoard")
 local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
+local inventory = game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory
 local gameValues = workspace:WaitForChild("GameValues")
 local orderTimer1 = 0  -- timer for a new order to appear
 local orderTimer2 = 0
@@ -25,8 +26,8 @@ function SendOrder(num)
 	local amount1 = orderGui:FindFirstChild(orderNum).Amount1	
 	local item2 = orderGui:FindFirstChild(orderNum).Item2
 	local amount2 = orderGui:FindFirstChild(orderNum).Amount2
-	local value1 = values:WaitForChild(item1.Text)  -- number of items in storage
-	local value2 = values:WaitForChild(item2.Text)
+	local value1 = inventory:WaitForChild(item1.Text)  -- number of items in storage
+	local value2 = inventory:WaitForChild(item2.Text)
 	local p1 = workspace.GameValues:FindFirstChild(item1.Text).Value  -- find sale price of item1
 	local p2 = workspace.GameValues:FindFirstChild(item2.Text).Value
 
@@ -59,8 +60,8 @@ function CheckOrderStatus(num)
 	local orderNum = "Order" .. num
 	local item1 = orderGui:FindFirstChild(orderNum).Amount1  -- number of items required
 	local item2 = orderGui:FindFirstChild(orderNum).Amount2
-	local value1 = values:WaitForChild(orderGui:FindFirstChild(orderNum).Item1.Text)  -- number of items in storage
-	local value2 = values:WaitForChild(orderGui:FindFirstChild(orderNum).Item2.Text)
+	local value1 = inventory:WaitForChild(orderGui:FindFirstChild(orderNum).Item1.Text)  -- number of items in storage
+	local value2 = inventory:WaitForChild(orderGui:FindFirstChild(orderNum).Item2.Text)
 	local check1 = orderGui:FindFirstChild(orderNum).Check1  -- checkmark on Gui
 	local check2 = orderGui:FindFirstChild(orderNum).Check2
 	if value1.Value >= tonumber(item1.Text) then  -- enough of first item
@@ -86,8 +87,8 @@ end
 -- Once timer is finished show a new order
 function CreateNewOrder(num)
 	local orderNum = "Order" .. num
-	local playerLevel = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Level 
-	local numItemsAvailable = playerLevel.Value * 2  -- how many total items do they have available to create
+	local available = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").SeedsAvailable
+	local numItemsAvailable = available.Value * 2  -- how many total items do they have available to create
 	local safety = 0  -- no infinite loops	
 	local randTotal = math.random(1,2)   -- How many different items in the order
 	local randItem1 = math.random(1,numItemsAvailable)  -- Which item 

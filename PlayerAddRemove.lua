@@ -38,7 +38,6 @@ function OpenStorage(player, farm)
 end
 
 
-
 -----------------
 -- Truck
 -----------------   moved into a script inside the truck model (so I can check ownership)
@@ -49,70 +48,53 @@ function OpenTruck(player, farm)
 end
 
 
-
 -----------------
--- Upgrades
+-- Upgrade Farm 
 -----------------
-function CheckForUpgrades()
-	local child = players:GetChildren()
-	for i=1,#child do
-		local farm = workspace:FindFirstChild(child[i].Name .. "_Farm")		
-		playerLevel = players:FindFirstChild(child[i].Name):WaitForChild("PlayerValues").Level
-		local playerMoney = players:FindFirstChild(child[i].Name):WaitForChild("PlayerValues").Money
-		local moneyNeeded = upgradeArray[playerLevel.Value]
-		if playerMoney.Value >= moneyNeeded and playerLevel.Value < 5 then
-			farm:WaitForChild("Button").Transparency = 0
-			farm.Button.ClickDetector.MaxActivationDistance = 16
-			farm.Button.CanCollide = true
-			farm.Button.Billboard.Cost.Visible = true
-		end
+function BuyUpgrade(player)
+	local farm = workspace:FindFirstChild(player.Name .. "_Farm")
+	local numPlots = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues.NumPlots
+	local moneyNeeded = upgradeArray[numPlots.Value/2-1]
+	local playerMoney = players:FindFirstChild(player.Name):WaitForChild("PlayerValues").Money
+	local numPlots = players:FindFirstChild(player.Name):WaitForChild("PlayerValues").NumPlots 
+	
+	if playerMoney.Value > moneyNeeded and numPlots.Value < 12 then  -- if they have the money and don't have all tiles yet
+		playerMoney.Value = playerMoney.Value - moneyNeeded
+		numPlots.Value = numPlots.Value + 2
+		-- show new items	
+		newPlotTiles(numPlots.Value, farm)  	
+		-- open UpgradeGui to tell them what they get
+		game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgrades"):FireClient(player, numPlots)  -- Goes to OpenGuis localscript
 	end	
 end
 
-function BuyUpgrade(player)
-	playerLevel = players:FindFirstChild(player.Name):WaitForChild("PlayerValues").Level 
-	local farm = workspace:FindFirstChild(player.Name .. "Farm")
 
-	-- Hide the button
-	farm.Button.Transparency = 1  
-	farm.Button.CanCollide = false
-	farm.Button.Billboard.Cost.Visible = false
-	farm.Button.ClickDetector.MaxActivationDistance = 0
-	farm.Button.CFrame = farm.Button.CFrame - Vector3.new(8,0,0) -- move 8 studs 
-
-	-- Take money and increase their level
-	local moneyNeeded = upgradeArray[playerLevel.Value]
-	local playerMoney = players:FindFirstChild(player.Name):WaitForChild("PlayerValues").Money
-	playerMoney.Value = playerMoney.Value - moneyNeeded
-	playerLevel.Value = playerLevel.Value + 1
-
-	-- Show new models	
-	if playerLevel.Value >= 2 and playerLevel.Value <= 5 then
-		newPlotTiles(playerLevel.Value, farm)
-	end
-	-- new items are checked for in PickVeggies localscript when they pick seeds
-
-	-- open UpgradeGui to tell them what they get
-	game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgrades"):FireClient(player, playerLevel)  -- Goes to OpenGuis localscript
-end
-
-
-function newPlotTiles(level, farm)
+function newPlotTiles(numPlots, farm)
 	local oldPlot = farm.FarmTiles
-	local location = oldPlot.PrimaryPart.CFrame	
+	local location = oldPlot.PrimaryPart.CFrame
+	local spin = farm.Decorations.Grass.Orientation
 	oldPlot:Destroy()	
-	local tilesNum = level * 2 + 2
-	local newPlot = game.ServerStorage:FindFirstChild("FarmTiles" .. tilesNum):Clone()
+	local newPlot = game.ServerStorage:FindFirstChild("FarmTiles" .. numPlots):Clone()
 	newPlot.Parent = farm
-	newPlot.Name = "FarmTiles"		
-	newPlot:SetPrimaryPartCFrame(location + Vector3.new(-4,0,0))  -- level1 is at 6.2, level2 is at 2.2, etc		
+	newPlot.Name = "FarmTiles"	
+	if spin.Y == 0 then  -- Place new farm tiles, farms can face any direction so check to see which way to shift the new tiles
+		newPlot:SetPrimaryPartCFrame(location + Vector3.new(-4,0,0))
+	elseif spin.Y == 180 then
+		newPlot:SetPrimaryPartCFrame(location + Vector3.new(4,0,0))
+	elseif spin.Y == 90 then
+		newPlot:SetPrimaryPartCFrame(location + Vector3.new(0,0,4))
+	elseif spin.Y == -90 then
+		newPlot:SetPrimaryPartCFrame(location + Vector3.new(0,0,-4))
+	end		
 	HidePlants(newPlot)
 	SetClickDetectors(newPlot)
 end
 
 
 
-
+------------------------
+-- Main
+------------------------
 players.PlayerAdded:Connect(function(player)
 	local farm = PlaceFarm(player)	
 
@@ -125,23 +107,23 @@ players.PlayerAdded:Connect(function(player)
 	-- truck clickdetector
 	farm:FindFirstChild("Truck").ClickDetector.mouseClick:connect(function(player) OpenTruck(player, farm) end);	
 	-- Upgrade clickdetector
-	farm:FindFirstChild("Button").ClickDetector.mouseClick:connect(BuyUpgrade);
-	-- Upgrade clickdetector
-	
+	farm:FindFirstChild("Upgrades").ClickDetector.mouseClick:connect(BuyUpgrade);
+	-- Lightswitch clickdetector
 	farm:FindFirstChild("House").LightSwitch.ClickDetector.mouseClick:connect(helperModule.LightSwitch);
 
 	local playerModel = workspace:WaitForChild(player.Name)
 	playerModel.HumanoidRootPart.CFrame = farm.SpawnLocation.CFrame  + Vector3.new(0, 3, 0)
-	
+	game.Players:WaitForChild(player.Name).CameraMaxZoomDistance = 25
 
 	-- Show starting values in inventory
-	local inventory = player.PlayerGui:WaitForChild("InventoryGui")
+	local invGui = player.PlayerGui:WaitForChild("InventoryGui")
+	local inventory = game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory
 	local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
-	local list = inventory.Storage.Items:GetChildren()
+	local list = invGui.Storage.Items:GetChildren()
 	for i = 1,#list do	
 		if list[i].Name ~= 'Title' and list[i].Name ~= 'Ready' then
-			local invItem = inventory.Storage.Items:FindFirstChild(list[i].Name).Amount
-			invItem.Text = values:WaitForChild(list[i].Name).Value
+			local invItem = invGui.Storage.Items:FindFirstChild(list[i].Name).Amount
+			invItem.Text = inventory:WaitForChild(list[i].Name).Value
 		end
 	end
 
@@ -155,11 +137,18 @@ players.PlayerAdded:Connect(function(player)
 	farm:FindFirstChild("Arrow").Wedge1.Transparency = 0
 	farm:FindFirstChild("Arrow").Wedge2.Transparency = 0
 
+	
+	
+
+--[[
 	-- Show Welcome Gui
 	if values.Tutorial.Value == 1 then
 		player.PlayerGui.TutorialGui.Welcome.Visible = true
 		values.Tutorial.Value = 2
 	end
+--]]
+	
+	
 end)
  
 
@@ -184,14 +173,19 @@ function SetClickDetectors(farmPlot)
 end
 
 function PlaceFarm(player)	
-	local spaces = workspace.Farms:GetChildren()
-	local rand = math.random(1,#spaces)
-	local location = spaces[rand].CFrame	
-	spaces[rand]:Destroy()	
+	--local spaces = workspace.Farms:GetChildren()
+	--local rand = math.random(1,#spaces)
+	--local location = spaces[rand].CFrame	
+	--spaces[rand]:Destroy()
+
+	local old = workspace.Farms:FindFirstChild("Farm1")
+	local location = old.CFrame
+	old:Destroy()
+
 	local newPlot = game.ServerStorage:FindFirstChild("FarmModel"):Clone()
 	newPlot.Parent = workspace
 	newPlot.Name = player.Name .. "_Farm"		
-	newPlot:SetPrimaryPartCFrame(location) 
+	newPlot:SetPrimaryPartCFrame(location + Vector3.new(0,.1,0)) 
 	newPlot:FindFirstChild("Owner").Value = player.Name
 	return newPlot
 end
@@ -241,7 +235,3 @@ game.Players.PlayerAdded:connect(function(player)
     level.Value = findLevel.Value	
 end)
 
-while true do
-	CheckForUpgrades()
-	wait(5)
-end

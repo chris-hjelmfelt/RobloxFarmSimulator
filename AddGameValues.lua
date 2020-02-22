@@ -61,6 +61,6 @@ function AddGameValues()
 	local v12 = Instance.new("IntValue") 
     v12.Name = "Peppers"
 	v12.Parent = gameValues  
-    v12.Value = 24
+    v12.Value = 24	
 end
 AddGameValues()

@@ -55,7 +55,7 @@ local Module = {}
 	function Module.RakePlant(player, plot, pickedItem)
 		local respawntime = 3
 		local weeds = plot.Weed:GetChildren()
-		local count = plot.Racking	
+		local count = plot.Racking	-- also resets below
 		local gui = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Sheet		
 		local timerBar = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Timer
 		local timer = 40
@@ -96,7 +96,7 @@ local Module = {}
 					end
 				end
 			end	
-			count.Value = 5
+			count.Value = 1
 		else	
 			for i=1,#weeds do
 				weeds[i].Transparency = 0
@@ -106,28 +106,35 @@ local Module = {}
 	end
 
 	
-	function Module.PickPlant(player, plot)		
-		game:GetService("ReplicatedStorage"):WaitForChild("HarvestPlants"):FireClient(player, plot) -- Sends to PickVeggies LocalScript
-		
-		-- Make veggie disappear 
-		for index, child in pairs(plot:GetChildren()) do
-			if child.Name == "Plant" then 
-				for k, p in pairs(child:GetChildren()) do
-    				p.Transparency = 1.0
+	function Module.PickPlant(player, plot)	
+		local inventory = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerInventory")
+		local storeLevels = workspace.GameValues2.StorageLevels.Value:split(",")
+		local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
+		if inventory.Total.Value < storeLevels[values.StorageLevel.Value] then  -- Do they have room in storage?	
+			game:GetService("ReplicatedStorage"):WaitForChild("HarvestPlants"):FireClient(player, plot) -- Sends to PickVeggies LocalScript
+			
+			-- Make veggie disappear 
+			for index, child in pairs(plot:GetChildren()) do
+				if child.Name == "Plant" then 
+					for k, p in pairs(child:GetChildren()) do
+	    				p.Transparency = 1.0
+					end
 				end
 			end
+		else  -- Tell them their storage is full
+			game:GetService("ReplicatedStorage"):WaitForChild("Warning"):FireClient(player, "Storage Full")
 		end		
 	end
 
 	-- Used to see if the players truck is close enough to their storage   -- comes from OpenGuis OpenMarket() and also OpenStorage()
-	function Module.checkTruckHere(player, zone)			
+	function Module.checkTruckHere(player, zone)	
 		local connection = zone.Touched:Connect(function() end)
 		local results = zone:GetTouchingParts()	
 		connection:Disconnect()		
 		local check = false
 		for i = 1,#results do
 			if results[i].Name == "Wheel" and results[i].Parent.Name == "Truck" then
-				if zone == workspace.Market.SellZone then    
+				if zone == workspace.Market.SellZone.Zone then   
 					if results[i].Parent.Parent:FindFirstChild("Owner").Value == player.Name then  -- make sure it's the right player's truck 
 						check = true
 					end
