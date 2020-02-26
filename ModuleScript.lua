@@ -1,7 +1,22 @@
 -- This is a ModuleScript make sure to copy it into the right type of script
 
 local Module = {}	
-	function Module.PlantSeeds(player, plot, seeds)
+	function Module.CollectVeggie(player, plot)
+		if player.Name == plot.Parent.Parent:FindFirstChild("Owner").Value then
+			if plot.Plant.Leaf.Transparency == 0 then
+				Module.PickPlant(player, plot)	-- pick them
+			elseif plot.BrickColor.Name == "Brown" then			
+				Module.WaterPlant(player, plot)			
+			elseif plot.Weed.Weed.Transparency == 0 then	
+				Module.RakePlant(player, plot)	-- rake them
+			else
+				game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds"):FireClient(player, plot)  -- Goes to PickVeggies localScript ChooseSeeds()
+			end	
+		end
+	end
+
+
+	function Module.PlantSeeds(player, plot, seeds)  -- called from function collectVeggie() above
 		for index, child in pairs(plot:GetChildren()) do
 			if child.Name == "Plant" then 
 				local newPlant = game.ServerStorage:FindFirstChild(seeds):Clone()
@@ -19,7 +34,7 @@ local Module = {}
 	end
 
 
-	function Module.WaterPlant(player, plot)
+	function Module.WaterPlant(player, plot)  -- called from function collectVeggie() above
 		local gui = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Sheet		
 		local timerBar = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Timer
 		local timer = 10
@@ -52,8 +67,8 @@ local Module = {}
 	end
 
 
-	function Module.RakePlant(player, plot, pickedItem)
-		local respawntime = 3
+	function Module.RakePlant(player, plot, pickedItem)  -- called from function collectVeggie() above
+		local respawntime = 3 
 		local weeds = plot.Weed:GetChildren()
 		local count = plot.Racking	-- also resets below
 		local gui = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Sheet		
@@ -106,11 +121,11 @@ local Module = {}
 	end
 
 	
-	function Module.PickPlant(player, plot)	
+	function Module.PickPlant(player, plot)	 -- called from function collectVeggie() above
 		local inventory = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerInventory")
 		local storeLevels = workspace.GameValues2.StorageLevels.Value:split(",")
 		local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
-		if inventory.Total.Value < storeLevels[values.StorageLevel.Value] then  -- Do they have room in storage?	
+		if inventory.Total.Value < tonumber(storeLevels[values.StorageLevel.Value]) then  -- Do they have room in storage?	
 			game:GetService("ReplicatedStorage"):WaitForChild("HarvestPlants"):FireClient(player, plot) -- Sends to PickVeggies LocalScript
 			
 			-- Make veggie disappear 
@@ -126,8 +141,8 @@ local Module = {}
 		end		
 	end
 
-	-- Used to see if the players truck is close enough to their storage   -- comes from OpenGuis OpenMarket() and also OpenStorage()
-	function Module.checkTruckHere(player, zone)	
+	-- Used to see if the players truck is close enough to their storage   
+	function Module.checkTruckHere(player, zone)	  -- comes from OpenGuis OpenMarket() and also OpenStorage()
 		local connection = zone.Touched:Connect(function() end)
 		local results = zone:GetTouchingParts()	
 		connection:Disconnect()		
@@ -149,7 +164,7 @@ local Module = {}
 	end
 	
 
-	-- Used to weld an object to a player
+	-- Used to weld an object to a player   -- Used for HoldRake() and HoldWater()
 	function Module.weldToHuman(a,b) -- put bodypart as a and put object as b
 	   b.CFrame = a.CFrame -- * CFrame.Angles(math.rad(90), 0, 0) -- * CFrame.new(0,0,0)--  to change location or angles
 	   local weld = Instance.new("Weld")
@@ -200,7 +215,39 @@ local Module = {}
 		end
 	end
 
-	function Module.LightSwitch(player)	
+	
+	-- hide plants on start
+	function Module.HidePlants(farmPlot)  -- Comes from PlayerAddRemove PlayerAdded() and Miscellanious newPlotTiles()
+		local plot = farmPlot:GetChildren()
+		for c = 1,#plot do
+			if plot[c].Name == "Dirt Tile" then
+				for index, child in pairs(plot[c]:GetChildren()) do
+					if child.Name == "Plant" then 
+						for k, p in pairs(child:GetChildren()) do
+							p.Transparency = 1
+							p.CanCollide = false
+						end
+					end
+				end	
+				--plot[c].BrickColor = BrickColor.new("Brown")
+				plot[c].Racking.Value = 1
+			end	
+		end
+	end
+
+	
+	-- clickdetectors for Farm DirtTiles
+	function Module.SetClickDetectors(farmPlot)  -- Comes from PlayerAddRemove PlayerAdded() and Miscellanious newPlotTiles()
+		local plot = farmPlot:GetChildren()
+		for c = 1,#plot do
+			if plot[c].Name == "Dirt Tile" then 		
+				plot[c].ClickDetector.mouseClick:connect(function(player) Module.CollectVeggie(player, plot[c]) end);	
+			end
+		end
+	end
+
+
+	function Module.LightSwitch(player)	 -- Comes from PlayerAddRemove PlayerAdded()
 		local farm = workspace:FindFirstChild(player.Name .. "_Farm")
 		local light1 = farm.House.OverheadLight.Light.PointLight
 		local light2 = farm.House.Ceiling.SurfaceLight
@@ -213,5 +260,69 @@ local Module = {}
 				light2.Enabled = true
 			end
 		end
+	end
+
+	
+	-- find a vector for shifting a model using some base part to get orientation of which way farm is facing  
+	function Module.ShiftModel(base, x,y,z)
+		local spin = base.Orientation
+		if spin.Y == 0 then  -- Place new farm tiles, farms can face any direction so check to see which way to shift the new tiles
+			return Vector3.new(x,y,z)
+		elseif spin.Y == 180 then
+			return Vector3.new(-x,y,-z)
+		elseif spin.Y == 90 then
+			return Vector3.new(z,y,-x)
+		elseif spin.Y == -90 then
+			return Vector3.new(-z,y,x)
+		else
+			print("Misc newPlots fell through")
+			return Vector3.new(-x,y,z)			
+		end
+	end
+
+	function Module.PlaceStorageModel(player)
+		local farm = workspace:FindFirstChild(player.Name .. "_Farm")
+		local storeLevel = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues.StorageLevel
+		local oldModel = farm.Storage
+		local location = oldModel.PrimaryPart.CFrame
+		local newModel = nil	
+		
+		if storeLevel.Value < 6 then
+			newModel = game.ServerStorage:FindFirstChild("Storage" .. storeLevel.Value):Clone()
+			newModel:SetPrimaryPartCFrame(location)
+			oldModel:Destroy()
+		elseif storeLevel.Value == 6 then
+			newModel = game.ServerStorage:FindFirstChild("Shed"):Clone()
+			local shiftVector = Module.ShiftModel(oldModel.PrimaryPart, 0, -2, 0)
+			newModel:SetPrimaryPartCFrame(location + shiftVector)
+			oldModel:Destroy()
+		elseif storeLevel.Value == 7 then
+			newModel = game.ServerStorage:FindFirstChild("Silo"):Clone()
+			local shiftVector = Module.ShiftModel(oldModel.PrimaryPart, -10.2, 4.45, -3)
+			newModel:SetPrimaryPartCFrame((location * CFrame.Angles(0,0, math.rad(90)))+ shiftVector)
+		elseif storeLevel.Value >= 8 then
+			newModel = game.ServerStorage:FindFirstChild("Silo"):Clone()
+			local shiftVector = Module.ShiftModel(oldModel.PrimaryPart, -10.2, 4.45, 3)
+			newModel:SetPrimaryPartCFrame((location * CFrame.Angles(0,0, math.rad(90)))+ shiftVector)
+		end
+		newModel.Parent = farm
+		newModel.Name = "Storage"	
+	end
+
+
+	function Module.PlaceFarmTiles(player, numPlots)
+		local farm = workspace:FindFirstChild(player.Name .. "_Farm")
+		local numPlots = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues.NumPlots
+		local oldPlot = farm.FarmTiles
+		local location = oldPlot.PrimaryPart.CFrame
+		--local spin = farm.Decorations.Grass.Orientation
+		local shiftVector = Module.ShiftModel(farm.Decorations.Grass, -4, 0, 0)
+		oldPlot:Destroy()	
+		local newPlot = game.ServerStorage:FindFirstChild("FarmTiles" .. numPlots.Value):Clone()
+		newPlot.Parent = farm
+		newPlot.Name = "FarmTiles"	
+		newPlot:SetPrimaryPartCFrame(location + shiftVector)
+		Module.HidePlants(newPlot)
+		Module.SetClickDetectors(newPlot)
 	end
 return Module

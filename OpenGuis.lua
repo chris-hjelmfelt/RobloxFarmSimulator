@@ -13,10 +13,11 @@ local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValu
 local upgradeGui = player.PlayerGui:WaitForChild("UpgradeGui")
 local storeLevels = workspace.GameValues2.StorageLevels.Value:split(",")
 local storeCost = workspace.GameValues2.StorageCost.Value:split(",")
+local farmSpaceCost = workspace.GameValues2.FarmSpaceCost.Value:split(",")
 
 
 -----------------------------
--- Gui starting situation
+-- Set guis at start of game
 ------------------------------
 -- Hide Backpack items
 game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
@@ -32,9 +33,8 @@ end
 
 
 ---------------------
--- Functions
+-- Inventory 
 ---------------------
-
 function OpenStorage()	
 	local zone = workspace:FindFirstChild(player.Name .. "_Farm").LoadingZone
 	invGui.Storage.Visible = true
@@ -55,6 +55,20 @@ end
 game:GetService("ReplicatedStorage"):WaitForChild("OpenTruck").OnClientEvent:Connect(OpenTruck)  -- Comes from PlayerAddRemove
 
 
+-- Show or Hide truck inventory and transfer buttons in Storage Gui
+function ShowHideSell(show)
+	invGui.Warning.Visible = not show
+	invGui.Storage.Ready.Visible = show
+	local child = invGui.Storage.Items:GetChildren()
+	for i=1,#child do
+		child[i].TextBox.Visible = show
+	end
+	truck.Visible = show
+end
+
+-------------
+-- Market
+-------------
 function OpenMarket()	
 	print("OpenGuis Market")
 	truckHere = helperModule.checkTruckHere(player, workspace.Market:WaitForChild("SellZone").Zone)
@@ -65,12 +79,58 @@ end
 game:GetService("ReplicatedStorage"):WaitForChild("OpenMarket").OnClientEvent:Connect(OpenMarket)  -- Comes from Miscellanious
 
 
-function OpenHelp()
-	helpGui.Help1.Visible = true
+
+-------------
+-- Upgrades
+-------------
+-- Set items in Farm Space Upgrade Gui and Open the Gui
+function OpenUpgradeFarmGui()
+	local upGui = upgradeGui.UpgradeFarmSpace.Items
+	if values.NumPlots.Value == 4 then
+		upGui.List1.Text = "2 more farm tiles - " .. farmSpaceCost[1] .. " Coins"
+		upGui.List2.Text = "2 more farm tiles"
+		upGui.List3.Text = "2 more farm tiles"
+		upGui.List4.Text = "2 more farm tiles"
+		upGui.List5.Text = "2 fruit trees"
+	elseif values.NumPlots.Value == 6 then
+		upGui.List1.Text = "2 more farm tiles - " .. farmSpaceCost[2] .. " Coins"
+		upGui.List2.Text = "2 more farm tiles"
+		upGui.List3.Text = "2 more farm tiles"
+		upGui.List4.Text = "2 fruit trees"
+		upGui.List5.Text = "2 fruit trees"
+	elseif values.NumPlots.Value == 8 then
+		upGui.List1.Text = "2 more farm tiles - " .. farmSpaceCost[3] .. " Coins"
+		upGui.List2.Text = "2 more farm tiles"
+		upGui.List3.Text = "2 fruit trees"
+		upGui.List4.Text = "2 fruit trees"
+		upGui.List5.Text = "2 fruit trees"
+	elseif values.NumPlots.Value == 10 then
+		upGui.List1.Text = "2 more farm tiles - " .. farmSpaceCost[4] .. " Coins"
+		upGui.List2.Text = "2 fruit trees"
+		upGui.List3.Text = "2 fruit trees"
+		upGui.List4.Text = "2 fruit trees"
+		upGui.List5.Visible = false
+	elseif values.NumPlots.Value == 12 then
+		upGui.List1.Text = "2 fruit trees - " .. farmSpaceCost[5] .. " Coins"
+		upGui.List2.Text = "2 fruit trees"
+		upGui.List3.Text = "2 fruit trees"
+		upGui.List4.Visible = false
+		upGui.List5.Visible = false
+	end
+	upgradeGui.UpgradeFarmSpace.Visible = true
 end
-hudGui.HUD.Help.MouseButton1Click:Connect(OpenHelp)
+game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgradeFarm").OnClientEvent:Connect(OpenUpgradeFarmGui)
 
 
+-- Purchase Farm Space Upgrade
+function UpgradeFarmSpace()
+	upgradeGui.UpgradeFarmSpace.Visible = false
+	game:GetService("ReplicatedStorage"):WaitForChild("BuyFarmSpace"):FireServer() -- Goes to PlayerAddRemove 
+end
+upgradeGui.UpgradeFarmSpace.Items.Button.MouseButton1Click:Connect(UpgradeFarmSpace)
+
+
+-- Set items in Gui for buying more storage space and open the Gui
 function OpenUpgradeStorageGui()
 	local upGui = upgradeGui.UpgradeStorage.Items
 	if values.StorageLevel.Value == 1 then
@@ -116,41 +176,53 @@ function OpenUpgradeStorageGui()
 		upGui.List4.Visible = false
 		upGui.List5.Visible = false
 	end
+	invGui.Storage.Visible = false
+	invGui.Truck.Visible = false
 	upgradeGui.UpgradeStorage.Visible = true
 end
 hudGui.Warning.Upgrade.MouseButton1Click:Connect(OpenUpgradeStorageGui)
 invGui.Storage.Upgrade.MouseButton1Click:Connect(OpenUpgradeStorageGui)
 
 
+-- Purchase more storage space
 function UpgradeStorage()
 	local cost = tonumber(storeCost[values.StorageLevel.Value+1])
 	if values.Money.Value > cost then
 		upgradeGui.UpgradeStorage.Visible = false
 		game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("StorageLevel", 1, true)  -- Goes to Misc ChangePlayerValue()
 		game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", cost, false)  -- Goes to Misc ChangePlayerValue()	
-		upgradeGui.Upgrade.Items.List1.Text = "You have increased your available storage space!"
-		upgradeGui.Upgrade.Visible = true
+		upgradeGui.UpgradeConfirm.Items.List1.Text = "You have increased your available storage space!"
+		upgradeGui.UpgradeConfirm.Visible = true		
 		if values.StorageLevel.Value >= 7 then
 			invGui.Storage.Upgrade.Visible = false
 			hudGui.Warning.Upgrade.Visible = false
 		end
+		game:GetService("ReplicatedStorage"):WaitForChild("BiggerStorage"):FireServer()
 	end
 end
 upgradeGui.UpgradeStorage.Items.Button.MouseButton1Click:Connect(UpgradeStorage)
 
 
--- Show or Hide button to open truck inventory and sell buttons in Storage Gui
-function ShowHideSell(show)
-	invGui.Warning.Visible = not show
-	invGui.Storage.Ready.Visible = show
-	local child = invGui.Storage.Items:GetChildren()
-	for i=1,#child do
-		child[i].TextBox.Visible = show
-	end
-	truck.Visible = show
+-- open Gui to confirm Upgrade
+function OpenUpgrades()	
+	upgradeGui.UpgradeConfirm.Items.List1.Text = "You've upgraded your farm"
+	upgradeGui.UpgradeConfirm.Visible = true
 end
+game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgrades").OnClientEvent:Connect(OpenUpgrades)  -- Comes from PlayerAddRemove BuyUpgrades
 
 
+---------------
+-- Help Gui
+---------------
+function OpenHelp()
+	helpGui.Help1.Visible = true
+end
+hudGui.HUD.Help.MouseButton1Click:Connect(OpenHelp)
+
+
+----------------
+-- Warning Gui
+----------------
 function OpenWarning(sent)	
 	hudGui.Warning.TextLabel.Text = sent
 	hudGui.Warning.Visible = true
@@ -158,7 +230,4 @@ end
 game:GetService("ReplicatedStorage"):WaitForChild("Warning").OnClientEvent:Connect(OpenWarning)  -- Comes from ModuleScript
 
 
-function OpenUpgrades()	
-	upgradeGui.Upgrade.Visible = true
-end
-game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgrades").OnClientEvent:Connect(OpenUpgrades)  -- Comes from ModuleScript
+
