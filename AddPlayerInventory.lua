@@ -6,27 +6,27 @@ game.Players.PlayerAdded:connect(function(player)
 	local total = Instance.new("IntValue") 
     total.Name = "Total"
 	total.Parent = playerValues  
-    total.Value = 38 
+    total.Value = 0 
 
 	local v1 = Instance.new("IntValue") 
     v1.Name = "Potatoes"
 	v1.Parent = playerValues  
-    v1.Value = 26 
+    v1.Value = 10 
     
 	local v2 = Instance.new("IntValue") 
     v2.Name = "Carrots"
 	v2.Parent = playerValues   
-    v2.Value = 4
+    v2.Value = 0
 	
 	local v3 = Instance.new("IntValue") 
     v3.Name = "Onions"
 	v3.Parent = playerValues  
-    v3.Value = 4
+    v3.Value = 0
 		
 	local v4 = Instance.new("IntValue") 
     v4.Name = "Pumpkins"
 	v4.Parent = playerValues  
-    v4.Value = 4
+    v4.Value = 0
 
 	local v5 = Instance.new("IntValue") 
     v5.Name = "Corn"

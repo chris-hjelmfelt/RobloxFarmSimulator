@@ -11,12 +11,12 @@ game.Players.PlayerAdded:connect(function(player)
 	local xp = Instance.new("IntValue")
  	xp.Name = "Experience"
     xp.Parent = playerValues 
-    xp.Value = 40
+    xp.Value = 0
 
 	local money = Instance.new("IntValue") 
     money.Name = "Money"
     money.Parent = playerValues 
-    money.Value = 1000000
+    money.Value = 0
 
 	local tut = Instance.new("IntValue")
 	tut.Name = "Tutorial"
@@ -46,12 +46,12 @@ game.Players.PlayerAdded:connect(function(player)
 	local numPlots = Instance.new("IntValue") 
     numPlots.Name = "NumPlots" 
     numPlots.Parent = playerValues
-    numPlots.Value = 8
+    numPlots.Value = 4
 	
 	local store = Instance.new("IntValue") 
     store.Name = "StorageLevel" 
     store.Parent = playerValues
-    store.Value = 6
+    store.Value = 1
 	
 	local truck = Instance.new("BoolValue") 
     truck.Name = "FarmTruck" 

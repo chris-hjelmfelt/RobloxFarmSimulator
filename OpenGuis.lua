@@ -3,17 +3,16 @@ local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local marketGui = player.PlayerGui:WaitForChild("MarketGui")
 local helpGui = player.PlayerGui:WaitForChild("HelpGui")
 local hudGui = player.PlayerGui:WaitForChild("HUDGui")
-local truck = invGui.Truck
 local truckHere = false
-local gameValues = workspace:WaitForChild("GameValues")
+local gameValues = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts")
 local each = gameValues:GetChildren()  -- list of items 
 local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
 local helperModule = require(workspace.ModuleScript)
 local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
 local upgradeGui = player.PlayerGui:WaitForChild("UpgradeGui")
-local storeLevels = workspace.GameValues2.StorageLevels.Value:split(",")
-local storeCost = workspace.GameValues2.StorageCost.Value:split(",")
-local farmSpaceCost = workspace.GameValues2.FarmSpaceCost.Value:split(",")
+local storeLevels = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").StorageLevels.Value:split(",")
+local storeCost = workspace.GameValues.GameMisc.StorageCost.Value:split(",")
+local farmSpaceCost = workspace.GameValues.GameMisc.FarmSpaceCost.Value:split(",")
 
 
 -----------------------------
@@ -36,44 +35,30 @@ end
 -- Inventory 
 ---------------------
 function OpenStorage()	
-	local zone = workspace:FindFirstChild(player.Name .. "_Farm").LoadingZone
 	invGui.Storage.Visible = true
-	truck.Visible = false	
-	truckHere = helperModule.checkTruckHere(player, zone)
-	if truckHere == true then
-		ShowHideSell(true)
-	else
-		ShowHideSell(false)
-	end
+	invGui.Truck.Visible = false
 end
 game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage").OnClientEvent:Connect(OpenStorage)  -- Comes from PlayerAddRemove
 
 
 function OpenTruck()	
-	truck.Visible = true
+	invGui.Truck.Visible = true
+	invGui.Storage.Visible = false
 end
 game:GetService("ReplicatedStorage"):WaitForChild("OpenTruck").OnClientEvent:Connect(OpenTruck)  -- Comes from PlayerAddRemove
 
-
--- Show or Hide truck inventory and transfer buttons in Storage Gui
-function ShowHideSell(show)
-	invGui.Warning.Visible = not show
-	invGui.Storage.Ready.Visible = show
-	local child = invGui.Storage.Items:GetChildren()
-	for i=1,#child do
-		child[i].TextBox.Visible = show
-	end
-	truck.Visible = show
-end
 
 -------------
 -- Market
 -------------
 function OpenMarket()	
-	print("OpenGuis Market")
 	truckHere = helperModule.checkTruckHere(player, workspace.Market:WaitForChild("SellZone").Zone)
 	if truckHere == true then
 		marketGui.Market.Visible = true
+		invGui.Truck.Visible = false
+	else
+		marketGui.WarnTruck.Visible = true
+		invGui.Truck.Visible = false
 	end	
 end
 game:GetService("ReplicatedStorage"):WaitForChild("OpenMarket").OnClientEvent:Connect(OpenMarket)  -- Comes from Miscellanious
@@ -223,11 +208,10 @@ hudGui.HUD.Help.MouseButton1Click:Connect(OpenHelp)
 ----------------
 -- Warning Gui
 ----------------
-function OpenWarning(sent)	
+function OpenWarning(sent)
 	hudGui.Warning.TextLabel.Text = sent
 	hudGui.Warning.Visible = true
 end
-game:GetService("ReplicatedStorage"):WaitForChild("Warning").OnClientEvent:Connect(OpenWarning)  -- Comes from ModuleScript
-
+game:GetService("ReplicatedStorage"):WaitForChild("Warning").OnClientEvent:Connect(OpenWarning)  -- Comes from ModuleScript PickPlant() and Misc BuyUpgrade()
 
 

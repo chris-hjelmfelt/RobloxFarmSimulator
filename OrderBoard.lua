@@ -2,7 +2,7 @@ local player = game.Players.LocalPlayer
 local orderGui = player.PlayerGui:WaitForChild("OrderGui"):WaitForChild("OrderBoard")
 local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
 local inventory = game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory
-local gameValues = workspace:WaitForChild("GameValues")
+local plants = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts")
 local orderTimer1 = 0  -- timer for a new order to appear
 local orderTimer2 = 0
 local orderTimer3 = 0
@@ -104,7 +104,7 @@ function CreateNewOrder(num)
 	local item2 = orderGui:FindFirstChild(orderNum).Item2
 	local amount2 = orderGui:FindFirstChild(orderNum).Amount2
 	
-	local each = gameValues:GetChildren()  -- list of items 
+	local each = plants:GetChildren()  -- list of items 
 	
 	if randTotal == 2 then  -- fill the textLabels on the Gui with the random items and amounts
 		item1.Text = each[randItem1].Name

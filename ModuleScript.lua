@@ -67,13 +67,14 @@ local Module = {}
 	end
 
 
-	function Module.RakePlant(player, plot, pickedItem)  -- called from function collectVeggie() above
-		local respawntime = 3 
+	function Module.RakePlant(player, plot)  -- called from function collectVeggie() above
+		local pickedItem = plot.CropType.Value
+		local respawntime = workspace:WaitForChild("GameValues"):WaitForChild("PlantGrowTimes"):FindFirstChild(pickedItem).Value
 		local weeds = plot.Weed:GetChildren()
 		local count = plot.Racking	-- also resets below
 		local gui = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Sheet		
 		local timerBar = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Timer
-		local timer = 40
+		local timer = 20
 		local tickSize = 200/timer  -- width of Gui/timer
 
 		-- Do racking action
@@ -123,7 +124,7 @@ local Module = {}
 	
 	function Module.PickPlant(player, plot)	 -- called from function collectVeggie() above
 		local inventory = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerInventory")
-		local storeLevels = workspace.GameValues2.StorageLevels.Value:split(",")
+		local storeLevels = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").StorageLevels.Value:split(",")
 		local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
 		if inventory.Total.Value < tonumber(storeLevels[values.StorageLevel.Value]) then  -- Do they have room in storage?	
 			game:GetService("ReplicatedStorage"):WaitForChild("HarvestPlants"):FireClient(player, plot) -- Sends to PickVeggies LocalScript
@@ -153,10 +154,8 @@ local Module = {}
 					if results[i].Parent.Parent:FindFirstChild("Owner").Value == player.Name then  -- make sure it's the right player's truck 
 						check = true
 					end
-				else	
-					if results[i].Parent.Parent == zone.Parent then
-						check = true	
-					end
+				else 
+					-- not using this for storage anymore but soon for orderboard						
 				end
 			end	
 		end			
@@ -236,17 +235,6 @@ local Module = {}
 	end
 
 	
-	-- clickdetectors for Farm DirtTiles
-	function Module.SetClickDetectors(farmPlot)  -- Comes from PlayerAddRemove PlayerAdded() and Miscellanious newPlotTiles()
-		local plot = farmPlot:GetChildren()
-		for c = 1,#plot do
-			if plot[c].Name == "Dirt Tile" then 		
-				plot[c].ClickDetector.mouseClick:connect(function(player) Module.CollectVeggie(player, plot[c]) end);	
-			end
-		end
-	end
-
-
 	function Module.LightSwitch(player)	 -- Comes from PlayerAddRemove PlayerAdded()
 		local farm = workspace:FindFirstChild(player.Name .. "_Farm")
 		local light1 = farm.House.OverheadLight.Light.PointLight
@@ -282,7 +270,7 @@ local Module = {}
 
 	function Module.PlaceStorageModel(player)
 		local farm = workspace:FindFirstChild(player.Name .. "_Farm")
-		local storeLevel = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues.StorageLevel
+		local storeLevel = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues").StorageLevel
 		local oldModel = farm.Storage
 		local location = oldModel.PrimaryPart.CFrame
 		local newModel = nil	
@@ -315,7 +303,6 @@ local Module = {}
 		local numPlots = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues.NumPlots
 		local oldPlot = farm.FarmTiles
 		local location = oldPlot.PrimaryPart.CFrame
-		--local spin = farm.Decorations.Grass.Orientation
 		local shiftVector = Module.ShiftModel(farm.Decorations.Grass, -4, 0, 0)
 		oldPlot:Destroy()	
 		local newPlot = game.ServerStorage:FindFirstChild("FarmTiles" .. numPlots.Value):Clone()
@@ -325,4 +312,54 @@ local Module = {}
 		Module.HidePlants(newPlot)
 		Module.SetClickDetectors(newPlot)
 	end
+
+
+	-- clickdetectors for Farm DirtTiles
+	function Module.SetClickDetectors(farmPlot)  -- Comes from PlayerAddRemove PlayerAdded() and Miscellanious newPlotTiles()
+		local plot = farmPlot:GetChildren()
+		for c = 1,#plot do
+			if plot[c].Name == "Dirt Tile" then 		
+				plot[c].ClickDetector.mouseClick:connect(function(player) Module.CollectVeggie(player, plot[c]) end);	
+			end
+		end
+	end
+
+
+	function Module.PlaceTruck(player, farm, owned)
+		local location = farm.Decorations.Driveway.CFrame
+		local truck = nil
+		if owned == true then
+			truck = game.ServerStorage:FindFirstChild("FarmTruck"):Clone()
+			-- Put player's name on their truck
+			truck.Wood.Sign1.SurfaceGui.NameText.Text = player.Name
+			truck.Wood.Sign2.SurfaceGui.NameText.Text = player.Name
+		else
+			truck = game.ServerStorage:FindFirstChild("MiniTruck"):Clone()
+			-- Put player's name on their truck
+			truck.Cargo.SurfaceGui.NameText.Text = player.Name
+		end
+		truck.Parent = farm
+		truck:SetPrimaryPartCFrame(location + Vector3.new(0,2,0))
+		truck.Name = "Truck"	
+		
+		-- Make truck drive slow in water
+		local child = truck:GetChildren()
+		for i = 1,#child do
+			if child[i].Name == "Wheel" then				
+				child[i].Touched:Connect(function(part) Module.WaterSlowDown(truck,part)  end) 
+			end
+		end
+		return truck
+	end
+	
+
+	-- This handles vehicles driving in the river
+	function Module.WaterSlowDown(truck, part)		
+		if part == workspace.River then  
+			truck:FindFirstChild("Seat1").MaxSpeed = truck.MaxSpeed.Value /3
+		elseif part == workspace.Baseplate then   
+			truck:FindFirstChild("Seat1").MaxSpeed = truck.MaxSpeed.Value
+		end
+	end
+
 return Module

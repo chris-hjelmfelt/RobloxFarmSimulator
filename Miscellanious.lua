@@ -1,7 +1,7 @@
 local players = game:GetService("Players")	
 local serverStorage = game:GetService("ServerStorage")
 local helperModule = require(workspace.ModuleScript)
-local farmSpaceCost = workspace:WaitForChild("GameValues2").FarmSpaceCost.Value:split(",")
+local farmSpaceCost = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").FarmSpaceCost.Value:split(",")
 
 
 -----------------
@@ -42,7 +42,7 @@ function BuyUpgrade(player)
 		-- open UpgradeGui to tell them what they get
 		game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgrades"):FireClient(player, numPlots)  -- Goes to OpenGuis localscript
 	elseif numPlots.Value >= 12 then
-		game:GetService("ReplicatedStorage"):WaitForChild("Warning"):FireClient(player, "Sorry this upgrade isn't active yet")
+		game:GetService("ReplicatedStorage"):WaitForChild("Warning"):FireClient(player, "Sorry this upgrade isn't active yet") -- Goes to OpenGuis Warning()
 	end	
 end
 game:GetService("ReplicatedStorage"):WaitForChild("BuyFarmSpace").OnServerEvent:Connect(BuyUpgrade)
@@ -62,7 +62,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("BiggerStorage").OnServerEvent
 ---------------------------------------------------
 function ChangePlayerValue(player, item, quantity, addBool)	
 	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")		
-	if quantity == 0 then
+	if quantity == 0 then   -- set which plot is clicked -- Comes from PickVeggies ChooseSeeds()
 		values.ActivePlot.Value = item
 	else
 		local itemAmount = values:WaitForChild(item)
@@ -87,6 +87,12 @@ function ChangePlayerInventory(player, item, quantity, addBool)
 end
 game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory").OnServerEvent:Connect(ChangePlayerInventory) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies()
 
+function ChangeLeaderstats(player)	
+	local stat = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("leaderstats")	
+	stat.Level.Value = stat.Level.Value + 1
+end
+game:GetService("ReplicatedStorage"):WaitForChild("ChangeLeaderstats").OnServerEvent:Connect(ChangePlayerInventory) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies()
+
 ----------------------------
 -- Particle Effects
 ----------------------------
@@ -101,7 +107,8 @@ function LevelUpEffects(player)
 	effect:Destroy()
 end
 game:GetService("ReplicatedStorage"):WaitForChild("LevelEffects").OnServerEvent:Connect(LevelUpEffects)
-workspace:FindFirstChild("Baseplate").ClickDetector.mouseClick:connect(LevelUpEffects);
+
+
 
 
 --[[ 
