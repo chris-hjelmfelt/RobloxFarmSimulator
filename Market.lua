@@ -1,7 +1,7 @@
 local player = game.Players.LocalPlayer
 local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local marketGui = player.PlayerGui:WaitForChild("MarketGui")
-local truck = invGui.Truck
+local truck = invGui.Storage
 local truckHere = false
 local helperModule = require(workspace.ModuleScript)
 
@@ -16,7 +16,7 @@ function SellVeggies()
 				if (tonumber(itemsSold[i]:FindFirstChild("Amount").Text) >= tonumber(itemsSold[i].TextBox.Text)) then  -- if they have the items
 					local price = workspace.GameValues:WaitForChild("PlantCosts"):FindFirstChild(itemsSold[i].Text).Value  -- find sale price of the item
 					local addMoney = itemsSold[i].TextBox.Text * price
-					GainCoins(addMoney)
+					helperModule.GainCoins(player, addMoney)
 					totalItems = totalItems + itemsSold[i].TextBox.Text
 					totalCoins = totalCoins + addMoney
 					game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", addMoney, true)  -- Goes to Misc ChangePlayerValue()
@@ -76,15 +76,3 @@ end
 invGui.Truck.Return.MouseButton1Click:Connect(TransferToTruck)
 --]]
 
-function GainCoins(amount)
-	local hudText = player.PlayerGui:WaitForChild("HUDGui").GainCoins
-	hudText.Text1.Text = "+" .. amount
-	hudText.Visible = true
-	wait(.2)
-	for i = 1,8 do
-		hudText.Text1.Position = hudText.Text1.Position + UDim2.new(0,0,0,-5)
-		wait(.2)
-	end
-	hudText.Visible = false
-	hudText.Text1.Position = hudText.Text1.Position + UDim2.new(0,0,0,40)
-end

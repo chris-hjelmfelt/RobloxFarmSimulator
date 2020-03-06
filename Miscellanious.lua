@@ -16,11 +16,25 @@ workspace:FindFirstChild("Market").ClickDetector.mouseClick:connect(OpenMarket);
 -----------------
 -- OrderBoard
 -----------------
-function OpenOrders(player)
-	
+function OpenOrders(player)	
 	game:GetService("ReplicatedStorage"):WaitForChild("OpenOrders"):FireClient(player) -- Sends to OrderBoard LocalScript
 end
 workspace:FindFirstChild("Orderboard").ClickDetector.mouseClick:connect(OpenOrders);
+
+
+-----------------
+-- Quests
+-----------------
+function OpenQuests(player, who)
+	game:GetService("ReplicatedStorage"):WaitForChild("OpenQuests"):FireClient(player, who) -- Sends to Quests LocalScript
+end
+workspace:WaitForChild("Quest Zone").Devon.ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Devon") end);
+workspace:WaitForChild("Stable").Stan.ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Stan") end);
+workspace:WaitForChild("Marie").ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Marie") end);
+workspace:WaitForChild("Corral").Emma.ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Emma") end);
+
+
+
 
 
 -----------------------
@@ -87,11 +101,12 @@ function ChangePlayerInventory(player, item, quantity, addBool)
 end
 game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory").OnServerEvent:Connect(ChangePlayerInventory) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies()
 
+
 function ChangeLeaderstats(player)	
 	local stat = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("leaderstats")	
 	stat.Level.Value = stat.Level.Value + 1
 end
-game:GetService("ReplicatedStorage"):WaitForChild("ChangeLeaderstats").OnServerEvent:Connect(ChangePlayerInventory) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies()
+game:GetService("ReplicatedStorage"):WaitForChild("ChangeLeaderstats").OnServerEvent:Connect(ChangeLeaderstats) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies() and Levels LevelUp()
 
 ----------------------------
 -- Particle Effects
@@ -106,7 +121,7 @@ function LevelUpEffects(player)
 	wait(2)
 	effect:Destroy()
 end
-game:GetService("ReplicatedStorage"):WaitForChild("LevelEffects").OnServerEvent:Connect(LevelUpEffects)
+game:GetService("ReplicatedStorage"):WaitForChild("LevelEffects").OnServerEvent:Connect(LevelUpEffects) -- comes from Levels LevelUp()
 
 
 

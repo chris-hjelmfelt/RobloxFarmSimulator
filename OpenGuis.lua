@@ -3,16 +3,30 @@ local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local marketGui = player.PlayerGui:WaitForChild("MarketGui")
 local helpGui = player.PlayerGui:WaitForChild("HelpGui")
 local hudGui = player.PlayerGui:WaitForChild("HUDGui")
-local truckHere = false
+local spawnGui = player.PlayerGui:WaitForChild("RespawnGui")
+local upgradeGui = player.PlayerGui:WaitForChild("UpgradeGui")
+local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
 local gameValues = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts")
 local each = gameValues:GetChildren()  -- list of items 
-local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
+local truckHere = false
 local helperModule = require(workspace.ModuleScript)
-local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
-local upgradeGui = player.PlayerGui:WaitForChild("UpgradeGui")
 local storeLevels = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").StorageLevels.Value:split(",")
 local storeCost = workspace.GameValues.GameMisc.StorageCost.Value:split(",")
 local farmSpaceCost = workspace.GameValues.GameMisc.FarmSpaceCost.Value:split(",")
+local farm = workspace:WaitForChild(player.Name .. "_Farm")
+
+
+---------------------
+-- Respawn Truck
+---------------------
+spawnGui.Adornee = farm.Decorations.Driveway
+function Respawn()
+	if player.Name == farm.Owner.Value then
+		local location= farm.Decorations.Driveway.CFrame
+		farm.Truck:SetPrimaryPartCFrame(location + Vector3.new(0,2,0))
+	end
+end
+spawnGui.Respawn.MouseButton1Click:Connect(Respawn);
 
 
 -----------------------------
@@ -20,6 +34,9 @@ local farmSpaceCost = workspace.GameValues.GameMisc.FarmSpaceCost.Value:split(",
 ------------------------------
 -- Hide Backpack items
 game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+
+
+-- Quests have their own localscript
 
 -- Storage upgrade buttons visible or not
 if values.StorageLevel.Value < 8 then
@@ -36,16 +53,8 @@ end
 ---------------------
 function OpenStorage()	
 	invGui.Storage.Visible = true
-	invGui.Truck.Visible = false
 end
 game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage").OnClientEvent:Connect(OpenStorage)  -- Comes from PlayerAddRemove
-
-
-function OpenTruck()	
-	invGui.Truck.Visible = true
-	invGui.Storage.Visible = false
-end
-game:GetService("ReplicatedStorage"):WaitForChild("OpenTruck").OnClientEvent:Connect(OpenTruck)  -- Comes from PlayerAddRemove
 
 
 -------------
@@ -55,13 +64,16 @@ function OpenMarket()
 	truckHere = helperModule.checkTruckHere(player, workspace.Market:WaitForChild("SellZone").Zone)
 	if truckHere == true then
 		marketGui.Market.Visible = true
-		invGui.Truck.Visible = false
 	else
 		marketGui.WarnTruck.Visible = true
-		invGui.Truck.Visible = false
 	end	
 end
 game:GetService("ReplicatedStorage"):WaitForChild("OpenMarket").OnClientEvent:Connect(OpenMarket)  -- Comes from Miscellanious
+
+
+-----------------
+-- Truck Respawn
+-----------------
 
 
 

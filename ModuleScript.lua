@@ -27,7 +27,11 @@ local Module = {}
 				for k, p in pairs(newPlant:GetChildren()) do
     				p.Transparency = 1
 					p.CanCollide = false
-				end		
+				end	
+				-- Make buds appear 
+				for b, c in pairs(plot.Buds:GetChildren()) do
+					c.Transparency = 0
+				end	
 			end
 		end		
 		plot.BrickColor = BrickColor.new("Brown")
@@ -137,6 +141,10 @@ local Module = {}
 					end
 				end
 			end
+			-- Make buds disappear 
+			for b, c in pairs(plot.Buds:GetChildren()) do
+				c.Transparency = 1.0
+			end
 		else  -- Tell them their storage is full
 			game:GetService("ReplicatedStorage"):WaitForChild("Warning"):FireClient(player, "Storage Full")
 		end		
@@ -227,10 +235,13 @@ local Module = {}
 							p.CanCollide = false
 						end
 					end
-				end	
-				--plot[c].BrickColor = BrickColor.new("Brown")
+				end					
+				-- Make buds disappear 
+				for b, c in pairs(plot[c].Buds:GetChildren()) do
+					c.Transparency = 1.0
+				end
 				plot[c].Racking.Value = 1
-			end	
+			end				
 		end
 	end
 
@@ -325,7 +336,7 @@ local Module = {}
 	end
 
 
-	function Module.PlaceTruck(player, farm, owned)
+	function Module.PlaceTruck(player, farm, owned)  -- called by GamePass script
 		local location = farm.Decorations.Driveway.CFrame
 		local truck = nil
 		if owned == true then
@@ -349,6 +360,10 @@ local Module = {}
 				child[i].Touched:Connect(function(part) Module.WaterSlowDown(truck,part)  end) 
 			end
 		end
+
+		-- Show an indicator over their truck
+		game:GetService("ReplicatedStorage"):WaitForChild("ShowTruckIndicator"):FireClient(player, truck)  -- Goes to localscript LocalParts  ShowArrow()
+		
 		return truck
 	end
 	
@@ -360,6 +375,21 @@ local Module = {}
 		elseif part == workspace.Baseplate then   
 			truck:FindFirstChild("Seat1").MaxSpeed = truck.MaxSpeed.Value
 		end
+	end
+
+	function Module.GainCoins(player, amount)
+		local hudText = player.PlayerGui:WaitForChild("HUDGui").GainCoins
+		local hudMoney = player.PlayerGui:WaitForChild("HUDGui").HUD.Money
+		hudText.Text1.Text = "+" .. amount
+		hudText.Visible = true
+		wait(.2)
+		for i = 1,8 do
+			hudText.Text1.Position = hudText.Text1.Position + UDim2.new(0,0,0,-5)
+			wait(.2)
+		end
+		hudText.Visible = false
+		hudText.Text1.Position = hudText.Text1.Position + UDim2.new(0,0,0,40)
+		hudMoney.Text = "Money: " .. player:WaitForChild("PlayerValues").Money.Value
 	end
 
 return Module

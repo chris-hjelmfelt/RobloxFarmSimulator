@@ -11,7 +11,7 @@ game.Players.PlayerAdded:connect(function(player)
 	local xp = Instance.new("IntValue")
  	xp.Name = "Experience"
     xp.Parent = playerValues 
-    xp.Value = 0
+    xp.Value = 90
 
 	local money = Instance.new("IntValue") 
     money.Name = "Money"
@@ -57,4 +57,9 @@ game.Players.PlayerAdded:connect(function(player)
     truck.Name = "FarmTruck" 
     truck.Parent = playerValues
     truck.Value = false
+
+	local quest = Instance.new("IntValue") 
+    quest.Name = "QuestProgress" 
+    quest.Parent = playerValues
+    quest.Value = 5
 end)

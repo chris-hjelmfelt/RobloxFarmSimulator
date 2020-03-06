@@ -7,7 +7,6 @@ local storeLevels = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc"
 
 -- Show Inventory
 local list = invGui.Storage.Items:GetChildren()
-local list2 = invGui.Truck.Items:GetChildren()
 local list3 = player.PlayerGui:WaitForChild("MarketGui").Market.Items:GetChildren()
 while true do
 	local total = inventory.Total.Value
@@ -15,7 +14,6 @@ while true do
 		if list[i].ClassName == "TextLabel" then
 			local quantity = inventory:FindFirstChild(list[i].Name).Value
 			list[i].Amount.Text = quantity
-			list2[i].Amount.Text = quantity
 			list3[i].Amount.Text = quantity
 			if list[i].Amount.Text == "0" then
 				list[i].TextColor3 = Color3.new(0.6, 0.6, 0.6)

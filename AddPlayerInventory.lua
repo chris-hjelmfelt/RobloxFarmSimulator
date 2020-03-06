@@ -3,6 +3,8 @@ game.Players.PlayerAdded:connect(function(player)
     playerValues.Name = "PlayerInventory"
     playerValues.Parent = player
 
+	-- Plot 1
+
 	local total = Instance.new("IntValue") 
     total.Name = "Total"
 	total.Parent = playerValues  
@@ -67,6 +69,69 @@ game.Players.PlayerAdded:connect(function(player)
     v12.Name = "Peppers"
 	v12.Parent = playerValues   
     v12.Value = 0
-	
+
+	-- Plot 2
+
+	local v13 = Instance.new("IntValue") 
+    v13.Name = "Lettuce"
+	v13.Parent = playerValues   
+    v13.Value = 0
+
+	local v14 = Instance.new("IntValue") 
+    v14.Name = "Strawberries"
+	v14.Parent = playerValues   
+    v14.Value = 0
+
+	local v15 = Instance.new("IntValue") 
+    v15.Name = "Cotton"
+	v15.Parent = playerValues   
+    v15.Value = 0
+
+	local v16 = Instance.new("IntValue") 
+    v16.Name = "Tea"
+	v16.Parent = playerValues   
+    v16.Value = 0
+
+	local v17 = Instance.new("IntValue") 
+    v17.Name = "Soybeans"
+	v17.Parent = playerValues   
+    v17.Value = 0
+
+	local v18 = Instance.new("IntValue") 
+    v18.Name = "Yams"
+	v18.Parent = playerValues   
+    v18.Value = 0
+
+	local v19 = Instance.new("IntValue") 
+    v19.Name = "Grapes"
+	v19.Parent = playerValues   
+    v19.Value = 0
+
+	local v20 = Instance.new("IntValue") 
+    v20.Name = "Coffee"
+	v20.Parent = playerValues   
+    v20.Value = 0
+
+	local v21 = Instance.new("IntValue") 
+    v21.Name = "Rice"
+	v21.Parent = playerValues   
+    v21.Value = 0
+
+	local v22 = Instance.new("IntValue") 
+    v22.Name = "Spinach"
+	v22.Parent = playerValues   
+    v22.Value = 0
+
+	local v23 = Instance.new("IntValue") 
+    v23.Name = "Garlic"
+	v23.Parent = playerValues   
+    v23.Value = 0
+
+	local v24 = Instance.new("IntValue") 
+    v24.Name = "SugarCane"
+	v24.Parent = playerValues   
+    v24.Value = 0
+
+		
 	
 end)

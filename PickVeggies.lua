@@ -2,7 +2,7 @@
 local player = game.Players.LocalPlayer
 local players = game:GetService("Players")	
 local invGui = player.PlayerGui:WaitForChild("InventoryGui")
-local truck = invGui.Truck
+local truck = invGui.Storage
 local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
 local plantCosts = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts")
 local each = plantCosts:GetChildren()  -- list of items 
@@ -16,8 +16,8 @@ function HarvestPlants(plot)
 	local item = plot.CropType.Value
 	local storage = invGui.Storage.Items:FindFirstChild(item)	
 	storage.Amount.Text = storage.Amount.Text + 1
-	GainXP()
 	player.PlayerGui:WaitForChild("HUDGui").HUD.Experience.Text = "Experience: " .. values.Experience.Value + 10
+	GainXP()	
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Experience", 10, true)  -- goes to Miscellanious script ChangePlayerValues()
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(item, 1, true)  -- goes to Miscellanious script ChangePlayerInventory()
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Total", 1, true)  -- goes to Miscellanious script ChangePlayerInventory()	

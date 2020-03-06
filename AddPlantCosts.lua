@@ -3,6 +3,8 @@ function AddGameValues()
     plants.Name = "PlantCosts"
     plants.Parent = workspace.GameValues
  
+	-- Plot 1
+
     local v1 = Instance.new("IntValue") 
     v1.Name = "Potatoes"
 	v1.Parent = plants  
@@ -62,5 +64,67 @@ function AddGameValues()
     v12.Name = "Peppers"
 	v12.Parent = plants  
     v12.Value = 24	
+
+	-- Plot 2
+
+	local v13 = Instance.new("IntValue") 
+    v13.Name = "Lettuce"
+	v13.Parent = plants  
+    v13.Value = 26
+
+	local v14 = Instance.new("IntValue") 
+    v14.Name = "Strawberries"
+	v14.Parent = plants   
+    v14.Value = 28
+
+	local v15 = Instance.new("IntValue") 
+    v15.Name = "Cotton"
+	v15.Parent = plants   
+    v15.Value = 30
+
+	local v16 = Instance.new("IntValue") 
+    v16.Name = "Tea"
+	v16.Parent = plants   
+    v16.Value = 32
+
+	local v17 = Instance.new("IntValue") 
+    v17.Name = "Soybeans"
+	v17.Parent = plants  
+    v17.Value = 34
+
+	local v18 = Instance.new("IntValue") 
+    v18.Name = "Yams"
+	v18.Parent = plants   
+    v18.Value = 36
+
+	local v19 = Instance.new("IntValue") 
+    v19.Name = "Grapes"
+	v19.Parent = plants   
+    v19.Value = 38
+
+	local v20 = Instance.new("IntValue") 
+    v20.Name = "Coffee"
+	v20.Parent = plants   
+    v20.Value = 40
+
+	local v21 = Instance.new("IntValue") 
+    v21.Name = "Rice"
+	v21.Parent = plants   
+    v21.Value = 42
+
+	local v22 = Instance.new("IntValue") 
+    v22.Name = "Spinach"
+	v22.Parent = plants   
+    v22.Value = 50
+
+	local v23 = Instance.new("IntValue") 
+    v23.Name = "Garlic"
+	v23.Parent = plants   
+    v23.Value = 48
+	
+	local v24 = Instance.new("IntValue") 
+    v24.Name = "SugarCane"
+	v24.Parent = plants  
+    v24.Value = 44
 end
 AddGameValues()

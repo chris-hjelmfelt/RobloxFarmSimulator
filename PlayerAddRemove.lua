@@ -18,18 +18,8 @@ game:GetService("ReplicatedStorage"):WaitForChild("PlantSeeds").OnServerEvent:Co
 -- Storage
 -----------------
 function OpenStorage(player, farm)
-	if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open truck
+	if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open stoage or truck
 		game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis LocalScript
-	end
-end
-
-
------------------
--- Truck
------------------ 
-function OpenTruck(player, farm)
-	if farm:FindFirstChild("Owner").Value == player.Name then
-		game:GetService("ReplicatedStorage"):WaitForChild("OpenTruck"):FireClient(player) -- Sends to OpenGuis LocalScript
 	end
 end
 
@@ -49,13 +39,14 @@ end
 ------------------------
 players.PlayerAdded:Connect(function(player)
 	local playerModel = workspace:WaitForChild(player.Name)
+	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")	
 	local farm = PlaceFarm(player)
+	-- truck is added in MS called by gamepass
 	helperModule.PlaceStorageModel(player)
 	helperModule.PlaceFarmTiles(player)	
-	-- storage clickdetector
-	farm:FindFirstChild("Storage").ClickDetector.mouseClick:connect(function(player) OpenStorage(player, farm) end);
-	-- truck clickdetector
-	farm:WaitForChild("Truck").ClickDetector.mouseClick:connect(function(player) OpenTruck(player, farm) end);	
+	-- storage and truck clickdetectors
+	farm:WaitForChild("Storage").ClickDetector.mouseClick:connect(function(player) OpenStorage(player, farm) end);
+	farm:WaitForChild("Truck").ClickDetector.mouseClick:connect(function(player) OpenStorage(player, farm) end);		
 	-- Upgrade clickdetector
 	farm:FindFirstChild("Upgrades").ClickDetector.mouseClick:connect(function(player) OpenUpgradeFarm(player, farm) end);
 	-- Lightswitch clickdetector
@@ -77,6 +68,9 @@ players.PlayerAdded:Connect(function(player)
 		end
 	end
 	
+	-- Show starting values in HUD
+	player.PlayerGui:WaitForChild("HUDGui").HUD.Money.Text = "Money: " .. values.Money.Value
+	player.PlayerGui:WaitForChild("HUDGui").HUD.Experience.Text = "Experience: " .. values.Experience.Value
 	
 	-- Show Welcome Gui
 	if values.Tutorial.Value == 1 then
@@ -142,7 +136,7 @@ end
 -- Put level in a model called leaderstats so it shows up in player list
 game.Players.PlayerAdded:connect(function(player)
 	local stats = Instance.new("Model")
-    stats.Name = "Leaderstats"
+    stats.Name = "leaderstats"
     stats.Parent = player
 
 	local findLevel = player:WaitForChild("PlayerValues"):WaitForChild("Level")
