@@ -5,6 +5,7 @@ local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local truck = invGui.Storage
 local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
 local plantCosts = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts")
+local helperModule = require(workspace.ModuleScript)
 local each = plantCosts:GetChildren()  -- list of items 
 local debounce1 = false
 local debounce2 = false
@@ -21,21 +22,22 @@ function HarvestPlants(plot)
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Experience", 10, true)  -- goes to Miscellanious script ChangePlayerValues()
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(item, 1, true)  -- goes to Miscellanious script ChangePlayerInventory()
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Total", 1, true)  -- goes to Miscellanious script ChangePlayerInventory()	
-	
+	-- Make sure inventory totals are still correct
+	helperModule.CheckInvTotal(player)
 end
 game:GetService("ReplicatedStorage"):WaitForChild("HarvestPlants").OnClientEvent:Connect(HarvestPlants) -- Comes from ModuleScript PickPlant()
 
 
 function ChooseSeeds(plot)
 	local farmGui = player.PlayerGui:WaitForChild("FarmGuis")
-	local available = players:FindFirstChild(player.Name):WaitForChild("PlayerValues").SeedsAvailable
+	local available = values.Level.Value + 1
 	local plants = farmGui.PlantSeeds.Items:GetChildren()
 	for i=1,#plants do  -- Show the seed buttons for the seeds they have available
 		if plants[i].ClassName == "TextButton" then 
 			plants[i].Visible = false   -- start with it all hidden
 			for j=1,#each do  -- each is at top
 				if each[j].Name == plants[i].Text then
-					if (available.Value) >= j then  
+					if (available) >= j then  
 						plants[i].Visible = true
 					end
 				end
@@ -49,7 +51,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds").OnClientEvent:C
 
 
 function SendSeeds(seedType)  -- from click detectors below
-	local plot = players:FindFirstChild(player.Name).PlayerValues.ActivePlot.Value	
+	local plot = players:FindFirstChild(player.Name).ActivePlot.Value	
 	game:GetService("ReplicatedStorage"):WaitForChild("PlantSeeds"):FireServer(plot, seedType) -- goes to PlayerAddRemove PlantSeeds()
 	player.PlayerGui:WaitForChild("FarmGuis").PlantSeeds.Visible = false
 end

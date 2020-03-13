@@ -37,6 +37,8 @@ function SellVeggies()
 		marketGui.Sold.Visible = true
 		marketGui.Market.Visible = false
 	end
+	-- Make sure inventory totals are still correct
+	helperModule.CheckInvTotal(player)
 end
 marketGui:WaitForChild("Market").Sell.MouseButton1Click:Connect(SellVeggies)
 

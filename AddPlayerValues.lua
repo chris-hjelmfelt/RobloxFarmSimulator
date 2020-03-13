@@ -6,12 +6,12 @@ game.Players.PlayerAdded:connect(function(player)
 	local level = Instance.new("IntValue")
  	level.Name = "Level"
     level.Parent = playerValues 
-    level.Value = 1
+    level.Value = 1  -- starts at 1
 	
 	local xp = Instance.new("IntValue")
  	xp.Name = "Experience"
     xp.Parent = playerValues 
-    xp.Value = 90
+    xp.Value = 0
 
 	local money = Instance.new("IntValue") 
     money.Name = "Money"
@@ -21,17 +21,7 @@ game.Players.PlayerAdded:connect(function(player)
 	local tut = Instance.new("IntValue")
 	tut.Name = "Tutorial"
 	tut.Parent = playerValues 
-    tut.Value = 1	
-
-	local plot = Instance.new("ObjectValue") 
-    plot.Name = "ActivePlot" 
-    plot.Parent = playerValues
-    plot.Value = nil 
-
-	local seeds = Instance.new("IntValue") 
-    seeds.Name = "SeedsAvailable" 
-    seeds.Parent = playerValues
-    seeds.Value = 2
+    tut.Value = 1	-- starts at 1
 	
 	local trees = Instance.new("IntValue") 
     trees.Name = "TreesAvailable" 
@@ -46,20 +36,15 @@ game.Players.PlayerAdded:connect(function(player)
 	local numPlots = Instance.new("IntValue") 
     numPlots.Name = "NumPlots" 
     numPlots.Parent = playerValues
-    numPlots.Value = 4
+    numPlots.Value = 4  -- starts at 4
 	
 	local store = Instance.new("IntValue") 
     store.Name = "StorageLevel" 
     store.Parent = playerValues
-    store.Value = 1
-	
-	local truck = Instance.new("BoolValue") 
-    truck.Name = "FarmTruck" 
-    truck.Parent = playerValues
-    truck.Value = false
+    store.Value = 1  -- starts at 1
 
 	local quest = Instance.new("IntValue") 
     quest.Name = "QuestProgress" 
     quest.Parent = playerValues
-    quest.Value = 5
+    quest.Value = 1   -- starts at 1
 end)

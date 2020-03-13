@@ -11,16 +11,16 @@ function AddGameValues2()
 	local storeC = Instance.new("StringValue") 
     storeC.Name = "StorageCost"
 	storeC.Parent = gameValues  
-    storeC.Value = "200,400,1000,2000,3000,5000,7500,10000,20000" 
+    storeC.Value = "200,600,1500,3000,5000,10000,20000,50000,100000" 
 
 	local storeC = Instance.new("StringValue") 
     storeC.Name = "FarmSpaceCost"
 	storeC.Parent = gameValues  
-    storeC.Value = "20,50,100,200,300,400,600,800,1000,1200,1400"   
+    storeC.Value = "30,100,300,600,2000,6000,15000,30000,100000"   
 
 	local xpNeeded = Instance.new("StringValue") 
     xpNeeded.Name = "NextLevelXP"
 	xpNeeded.Parent = gameValues  
-    xpNeeded.Value = "200,500,900,1300,1800,2400,3100,3900,4900,6000,7200"
+    xpNeeded.Value = "100,300,600,1000,2000,3500,5000,7000,9000,11000,14000,17000"
 end
 AddGameValues2()

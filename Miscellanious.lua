@@ -30,11 +30,9 @@ function OpenQuests(player, who)
 end
 workspace:WaitForChild("Quest Zone").Devon.ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Devon") end);
 workspace:WaitForChild("Stable").Stan.ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Stan") end);
-workspace:WaitForChild("Marie").ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Marie") end);
+workspace:WaitForChild("Delivery").Marie.ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Marie") end);
 workspace:WaitForChild("Corral").Emma.ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Emma") end);
-
-
-
+workspace:WaitForChild("BlueHouse").Wyatt.ClickDetector.mouseClick:connect(function(player) OpenQuests(player, "Wyatt") end);
 
 
 -----------------------
@@ -77,7 +75,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("BiggerStorage").OnServerEvent
 function ChangePlayerValue(player, item, quantity, addBool)	
 	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")		
 	if quantity == 0 then   -- set which plot is clicked -- Comes from PickVeggies ChooseSeeds()
-		values.ActivePlot.Value = item
+		game:GetService("Players"):WaitForChild(player.Name).ActivePlot.Value = item
 	else
 		local itemAmount = values:WaitForChild(item)
 		if addBool == true then			
@@ -102,27 +100,44 @@ end
 game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory").OnServerEvent:Connect(ChangePlayerInventory) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies()
 
 
+function UpdatePlayerInventoryTotals(player, correctValue)
+	local inventory = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerInventory")
+	inventory.Total.Value = correctValue
+end
+game:GetService("ReplicatedStorage"):WaitForChild("UpdateInventoryTotal").OnServerEvent:Connect(UpdatePlayerInventoryTotals) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies()
+
+
 function ChangeLeaderstats(player)	
 	local stat = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("leaderstats")	
 	stat.Level.Value = stat.Level.Value + 1
 end
 game:GetService("ReplicatedStorage"):WaitForChild("ChangeLeaderstats").OnServerEvent:Connect(ChangeLeaderstats) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies() and Levels LevelUp()
 
-----------------------------
--- Particle Effects
-----------------------------
-function LevelUpEffects(player)
-	local playerModel = workspace:WaitForChild(player.Name)
-	local effect = game.ServerStorage:FindFirstChild("LevelUpEffect"):Clone()
-	effect.Parent = workspace	
-	effect.Position = playerModel.Head.Position + Vector3.new(0,-4,0)
-	wait(2)
-	effect.ParticleEmitter.Rate = 0
-	wait(2)
-	effect:Destroy()
-end
-game:GetService("ReplicatedStorage"):WaitForChild("LevelEffects").OnServerEvent:Connect(LevelUpEffects) -- comes from Levels LevelUp()
 
+--------------------
+-- Teleport Buttons
+--------------------
+function FarmTeleport(player)
+	local playerModel = workspace:WaitForChild(player.Name)
+	local farm = workspace:WaitForChild(player.Name .. "_Farm")
+	farm.Truck.Seat1.Disabled = true
+	wait(.5)	
+	playerModel:WaitForChild("HumanoidRootPart").CFrame = farm.SpawnLocation.CFrame  + Vector3.new(0, 3, 0)	
+	wait(.5)
+	farm.Truck.Seat1.Disabled = false
+end
+game:GetService("ReplicatedStorage"):WaitForChild("TeleportToFarm").OnServerEvent:Connect(FarmTeleport)  -- comes from OpenGuis FarmTeleport()
+
+function MarketTeleport(player)
+	local playerModel = workspace:WaitForChild(player.Name)
+	local farm = workspace:WaitForChild(player.Name .. "_Farm")
+	farm.Truck.Seat1.Disabled = true	
+	wait(.5)
+	playerModel:WaitForChild("HumanoidRootPart").CFrame = workspace.Market.Spawn.CFrame  + Vector3.new(0, 3, 0)	
+	wait(.5)
+	farm.Truck.Seat1.Disabled = false	
+end
+game:GetService("ReplicatedStorage"):WaitForChild("TeleportToMarket").OnServerEvent:Connect(MarketTeleport)  -- comes from OpenGuis MarketTeleport()
 
 
 

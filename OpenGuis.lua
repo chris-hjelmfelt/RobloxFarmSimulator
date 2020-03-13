@@ -32,11 +32,12 @@ spawnGui.Respawn.MouseButton1Click:Connect(Respawn);
 -----------------------------
 -- Set guis at start of game
 ------------------------------
--- Hide Backpack items
+-- Hide Backpack items and Teleport buttons
 game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+hudGui.HUD.Teleports.Visible = false
 
-
--- Quests have their own localscript
+-- Make sure Inventory total is correct
+helperModule.CheckInvTotal(player)
 
 -- Storage upgrade buttons visible or not
 if values.StorageLevel.Value < 8 then
@@ -46,6 +47,11 @@ else
 	invGui.Storage.Upgrade.Visible = false
 	hudGui.Warning.Upgrade.Visible = false
 end
+
+
+-----------------------------------------------
+-- Quests and Shopping have their own scripts
+-----------------------------------------------
 
 
 ---------------------
@@ -69,12 +75,6 @@ function OpenMarket()
 	end	
 end
 game:GetService("ReplicatedStorage"):WaitForChild("OpenMarket").OnClientEvent:Connect(OpenMarket)  -- Comes from Miscellanious
-
-
------------------
--- Truck Respawn
------------------
-
 
 
 -------------
@@ -129,52 +129,52 @@ upgradeGui.UpgradeFarmSpace.Items.Button.MouseButton1Click:Connect(UpgradeFarmSp
 
 -- Set items in Gui for buying more storage space and open the Gui
 function OpenUpgradeStorageGui()
+	print("OpenGuis OpenUpgradeStorageGui")
 	local upGui = upgradeGui.UpgradeStorage.Items
 	if values.StorageLevel.Value == 1 then
-		upGui.List1.Text = "Store " .. storeLevels[2] .. " Items - " .. storeCost[2] .. " Coins"
+		upGui.List1.Text = "Store " .. storeLevels[2] .. " Items - " .. storeCost[1] .. " Coins"
 		upGui.List2.Text = "Store " .. storeLevels[3] .. " Items"
 		upGui.List3.Text = "Store " .. storeLevels[4] .. " Items"
 		upGui.List4.Text = "Store " .. storeLevels[5] .. " Items"
 		upGui.List5.Text = "Store " .. storeLevels[6] .. " Items"
 	elseif values.StorageLevel.Value == 2 then
-		upGui.List1.Text = "Store " .. storeLevels[3] .. " Items - " .. storeCost[3] .. " Coins"
+		upGui.List1.Text = "Store " .. storeLevels[3] .. " Items - " .. storeCost[2] .. " Coins"
 		upGui.List2.Text = "Store " .. storeLevels[4] .. " Items"
 		upGui.List3.Text = "Store " .. storeLevels[5] .. " Items"
 		upGui.List4.Text = "Store " .. storeLevels[6] .. " Items"
 		upGui.List5.Text = "Store " .. storeLevels[7] .. " Items"
 	elseif values.StorageLevel.Value == 3 then
-		upGui.List1.Text = "Store " .. storeLevels[4] .. " Items - " .. storeCost[4] .. " Coins"
+		upGui.List1.Text = "Store " .. storeLevels[4] .. " Items - " .. storeCost[3] .. " Coins"
 		upGui.List2.Text = "Store " .. storeLevels[5] .. " Items"
 		upGui.List3.Text = "Store " .. storeLevels[6] .. " Items"
 		upGui.List4.Text = "Store " .. storeLevels[7] .. " Items"
 		upGui.List5.Text = "Store " .. storeLevels[8] .. " Items"
 	elseif values.StorageLevel.Value == 4 then
-		upGui.List1.Text = "Store " .. storeLevels[5] .. " Items - " .. storeCost[5] .. " Coins"
+		upGui.List1.Text = "Store " .. storeLevels[5] .. " Items - " .. storeCost[4] .. " Coins"
 		upGui.List2.Text = "Store " .. storeLevels[6] .. " Items"
 		upGui.List3.Text = "Store " .. storeLevels[7] .. " Items"
 		upGui.List4.Text = "Store " .. storeLevels[8] .. " Items"
 		upGui.List5.Visible = false
 	elseif values.StorageLevel.Value == 5 then
-		upGui.List1.Text = "Store " .. storeLevels[6] .. " Items - " .. storeCost[6] .. " Coins"
+		upGui.List1.Text = "Store " .. storeLevels[6] .. " Items - " .. storeCost[5] .. " Coins"
 		upGui.List2.Text = "Store " .. storeLevels[7] .. " Items"
 		upGui.List3.Text = "Store " .. storeLevels[8] .. " Items"
 		upGui.List4.Visible = false
 		upGui.List5.Visible = false
 	elseif values.StorageLevel.Value == 6 then
-		upGui.List1.Text = "Store " .. storeLevels[7] .. " Items - " .. storeCost[7] .. " Coins"
+		upGui.List1.Text = "Store " .. storeLevels[7] .. " Items - " .. storeCost[6] .. " Coins"
 		upGui.List2.Text = "Store " .. storeLevels[8] .. " Items"
 		upGui.List3.Visible = false
 		upGui.List4.Visible = false
 		upGui.List5.Visible = false
 	elseif values.StorageLevel.Value == 7 then
-		upGui.List1.Text = "Store " .. storeLevels[8] .. " Items - " .. storeCost[8] .. " Coins"
+		upGui.List1.Text = "Store " .. storeLevels[8] .. " Items - " .. storeCost[7] .. " Coins"
 		upGui.List2.Visible = false
 		upGui.List3.Visible = false
 		upGui.List4.Visible = false
 		upGui.List5.Visible = false
 	end
 	invGui.Storage.Visible = false
-	invGui.Truck.Visible = false
 	upgradeGui.UpgradeStorage.Visible = true
 end
 hudGui.Warning.Upgrade.MouseButton1Click:Connect(OpenUpgradeStorageGui)
@@ -227,3 +227,29 @@ end
 game:GetService("ReplicatedStorage"):WaitForChild("Warning").OnClientEvent:Connect(OpenWarning)  -- Comes from ModuleScript PickPlant() and Misc BuyUpgrade()
 
 
+-----------------
+-- Bookcase
+-----------------
+function OpenBookcase()
+	player.PlayerGui:WaitForChild("Bookcase"):WaitForChild("ComingSoon").Visible = true
+end
+game:GetService("ReplicatedStorage"):WaitForChild("OpenBookcase").OnClientEvent:Connect(OpenBookcase)  -- Comes from ModuleScript OpenBookcase()
+
+
+--------------------
+-- Teleport Buttons
+--------------------
+function ShowTeleportButtons()
+	hudGui.HUD.Teleports.Visible = true
+end
+game:GetService("ReplicatedStorage"):WaitForChild("ShowTeleportButtons").OnClientEvent:Connect(ShowTeleportButtons)  -- comes from GamePass CheckTeleportPass() and onPromptGamePassPurchaseFinished()
+
+function FarmTeleport()
+	game:GetService("ReplicatedStorage"):WaitForChild("TeleportToFarm"):FireServer()  -- Goes to Misc FarmTeleport()
+end
+hudGui.HUD.Teleports.Farm.MouseButton1Click:Connect(FarmTeleport)
+
+function MarketTeleport()
+	game:GetService("ReplicatedStorage"):WaitForChild("TeleportToMarket"):FireServer()  -- Goes to Misc MarketTeleport()
+end
+hudGui.HUD.Teleports.Market.MouseButton1Click:Connect(MarketTeleport)

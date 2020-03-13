@@ -1,9 +1,12 @@
-    local players = game:GetService("Players")	
+    local Players = game:GetService("Players")	
 	local serverStorage = game:GetService("ServerStorage")
-	local upgradeArray = {5,10,15,20,25,30,35,40,45,50} -- money needed for the next level
+	--local upgradeArray = {5,10,15,20,25,30,35,40,45,50} -- money needed for the next level
+	local xpArray = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").NextLevelXP.Value:split(",")  -- xp needed for each level
 	local playerLevel = nil	
 	local helperModule = require(workspace.ModuleScript)
-	
+	local valueDataLoaded = false
+	local farmTilesLoaded = false
+
 ----------------
 -- Farming
 ----------------
@@ -24,6 +27,7 @@ function OpenStorage(player, farm)
 end
 
 
+
 ----------------------
 -- Upgrade Farm Space
 ----------------------
@@ -37,25 +41,45 @@ end
 ------------------------
 -- Main
 ------------------------
-players.PlayerAdded:Connect(function(player)
+Players.PlayerAdded:Connect(function(player)
+	-- Show Welcome Gui
+	player.PlayerGui:WaitForChild("TutorialGui"):WaitForChild("Welcome").Visible = true  -- if you stop showing this make sure you enable HUD because closing this enables it
+	
+	-- Setup farm
 	local playerModel = workspace:WaitForChild(player.Name)
 	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")	
 	local farm = PlaceFarm(player)
+	-- fARM TILES ADDED AT the bottom of this page
 	-- truck is added in MS called by gamepass
 	helperModule.PlaceStorageModel(player)
-	helperModule.PlaceFarmTiles(player)	
+	
+--[[
+	if player.Name == "Erin_OShea" or "Jaylah_Everstar" then
+	-- if player.Name == "Jaylah_Everstar" then
+		values.Money.Value = 0
+		values.Experience.Value = 0
+		values.Level.Value = 1
+		values.NumPlots.Value = 4
+		values.StorageLevel.Value = 1
+		values.QuestProgress.Value = 1
+	end
+--]]
+	-- Show special items
+	if values.QuestProgress.Value >= 10 then
+		helperModule.ShowBench(player)
+	end
 	-- storage and truck clickdetectors
 	farm:WaitForChild("Storage").ClickDetector.mouseClick:connect(function(player) OpenStorage(player, farm) end);
 	farm:WaitForChild("Truck").ClickDetector.mouseClick:connect(function(player) OpenStorage(player, farm) end);		
 	-- Upgrade clickdetector
 	farm:FindFirstChild("Upgrades").ClickDetector.mouseClick:connect(function(player) OpenUpgradeFarm(player, farm) end);
-	-- Lightswitch clickdetector
+	-- Lightswitch and bookcase clickdetector
 	farm:FindFirstChild("House").LightSwitch.ClickDetector.mouseClick:connect(helperModule.LightSwitch);
-
+	farm:FindFirstChild("House").Bookcase.ClickDetector.mouseClick:connect(helperModule.OpenBookcase);
 	
 	playerModel:WaitForChild("HumanoidRootPart").CFrame = farm.SpawnLocation.CFrame  + Vector3.new(0, 3, 0)
 	game.Players:WaitForChild(player.Name).CameraMaxZoomDistance = 25
-
+	
 	-- Show starting values in inventory
 	local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 	local inventory = game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory
@@ -67,26 +91,30 @@ players.PlayerAdded:Connect(function(player)
 			invItem.Text = inventory:WaitForChild(list[i].Name).Value
 		end
 	end
-	
+
+	-- Add this value to keep track of plaots
+    local objectValue = Instance.new("ObjectValue")
+    objectValue.Name = "ActivePlot"
+    objectValue.Value = nil
+    objectValue.Parent = player
+
 	-- Show starting values in HUD
 	player.PlayerGui:WaitForChild("HUDGui").HUD.Money.Text = "Money: " .. values.Money.Value
 	player.PlayerGui:WaitForChild("HUDGui").HUD.Experience.Text = "Experience: " .. values.Experience.Value
+	player.PlayerGui:WaitForChild("HUDGui").HUD.NextLevel.Text2.Text = xpArray[values.Level.Value]  
 	
-	-- Show Welcome Gui
-	if values.Tutorial.Value == 1 then
-		player.PlayerGui.TutorialGui.Welcome.Visible = true
-		values.Tutorial.Value = 2
-	end
 
 	-- Player dies or resets
-	player.CharacterAdded:Connect(function()
-		playerModel:WaitForChild("HumanoidRootPart").CFrame = farm.SpawnLocation.CFrame  + Vector3.new(0, 3, 0)
+	player.CharacterAdded:Connect(function(character)		
+		local thisPlayer = Players:GetPlayerFromCharacter(character)
+		playerModel = workspace:WaitForChild(thisPlayer.Name)
+		playerModel:WaitForChild("HumanoidRootPart").CFrame = farm.SpawnLocation.CFrame  + Vector3.new(0, 3, 0)		
 	end)
 		
 end)
- 
 
-players.PlayerRemoving:Connect(function(player)
+
+Players.PlayerRemoving:Connect(function(player)
 	local findFarms = workspace:GetChildren()
 	for i = 1,#findFarms do
 		if findFarms[i].Name == player.Name .. "_Farm" and findFarms[i].Owner.Value == player.Name then
@@ -133,19 +161,28 @@ function RemoveFarm(plot)
 end
 
 
--- Put level in a model called leaderstats so it shows up in player list
-game.Players.PlayerAdded:connect(function(player)
+function DataLoaded()
+	valueDataLoaded = true
+end
+game:GetService("ReplicatedStorage"):WaitForChild("LoadedValues").Event:connect(function(player)  DataLoaded() end)  -- comes from SavePVD LoadData()
+
+
+Players.PlayerAdded:Connect(function(player)
+	-- create leaderboard
 	local stats = Instance.new("Model")
     stats.Name = "leaderstats"
     stats.Parent = player
-
-	local findLevel = player:WaitForChild("PlayerValues"):WaitForChild("Level")
-
+	
 	local level = Instance.new("IntValue")
  	level.Name = "Level"
     level.Parent = stats 
-    level.Value = findLevel.Value	
+    level.Value = player:WaitForChild("PlayerValues"):WaitForChild("Level").Value	
+
+	-- place farm tiles
+	while wait() and farmTilesLoaded == false do
+		if workspace:FindFirstChild(player.Name .. "_Farm") and valueDataLoaded == true then
+			helperModule.PlaceFarmTiles(player)
+			farmTilesLoaded = true
+		end
+	end
 end)
-
-
-

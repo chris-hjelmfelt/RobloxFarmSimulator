@@ -1,22 +1,27 @@
 -- This is a ModuleScript make sure to copy it into the right type of script
+debounce = false
 
 local Module = {}	
-	function Module.CollectVeggie(player, plot)
-		if player.Name == plot.Parent.Parent:FindFirstChild("Owner").Value then
+	function Module.CollectVeggie(player, plot)  -- called from SetClickDetectors() below
+		if player.Name == plot.Parent.Parent:FindFirstChild("Owner").Value and debounce == false then
+			debounce = true		
 			if plot.Plant.Leaf.Transparency == 0 then
+				debounce = false
 				Module.PickPlant(player, plot)	-- pick them
 			elseif plot.BrickColor.Name == "Brown" then			
 				Module.WaterPlant(player, plot)			
 			elseif plot.Weed.Weed.Transparency == 0 then	
 				Module.RakePlant(player, plot)	-- rake them
-			else
+			else	
+				debounce = false
 				game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds"):FireClient(player, plot)  -- Goes to PickVeggies localScript ChooseSeeds()
 			end	
 		end
 	end
 
 
-	function Module.PlantSeeds(player, plot, seeds)  -- called from function collectVeggie() above
+	function Module.PlantSeeds(player, plot, seeds)  
+		plot.BrickColor = BrickColor.new("Brown")
 		for index, child in pairs(plot:GetChildren()) do
 			if child.Name == "Plant" then 
 				local newPlant = game.ServerStorage:FindFirstChild(seeds):Clone()
@@ -33,20 +38,18 @@ local Module = {}
 					c.Transparency = 0
 				end	
 			end
-		end		
-		plot.BrickColor = BrickColor.new("Brown")
+		end				
 	end
 
 
 	function Module.WaterPlant(player, plot)  -- called from function collectVeggie() above
-		local gui = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Sheet		
 		local timerBar = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Timer
 		local timer = 10
 		local tickSize = 200/timer  -- width of Gui/timer
 		Module.HoldWater(player, false)
-		gui.Visible = true  -- put up an invisible Gui to prevent them clicking other stuff during the weeding period
+		
 
-		-- raking timer 
+		-- watering timer 
 		timerBar.Visible = true
 		while timer > 0 do
 			timerBar.Size = UDim2.new(0, timerBar.Size.X.Offset - tickSize, 0, 15)
@@ -57,10 +60,10 @@ local Module = {}
 		timerBar.Size = UDim2.new(0, 200, 0, 15)
 		plot.BrickColor = BrickColor.new("Dirt brown")
 		wait()
-		gui.Visible = false
+		print("MS WaterPlant before")
 		Module.HoldWater(player, true)
-		
-		-- hold water can and do timer		
+		debounce = false
+		print("MS WaterPlant after")		
 		plot:WaitForChild("ClickDetector").MaxActivationDistance = 0		
 		wait(3)
 		local weeds = plot.Weed:GetChildren()
@@ -76,15 +79,13 @@ local Module = {}
 		local respawntime = workspace:WaitForChild("GameValues"):WaitForChild("PlantGrowTimes"):FindFirstChild(pickedItem).Value
 		local weeds = plot.Weed:GetChildren()
 		local count = plot.Racking	-- also resets below
-		local gui = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Sheet		
 		local timerBar = player.PlayerGui:WaitForChild("FarmGuis").StopClicks.Timer
 		local timer = 20
 		local tickSize = 200/timer  -- width of Gui/timer
 
 		-- Do racking action
 		Module.HoldRake(player, false)
-		gui.Visible = true  -- put up an invisible Gui to prevent them clicking other stuff during the weeding period
-
+		
 		-- raking timer 
 		timerBar.Visible = true
 		while timer > 0 do
@@ -102,9 +103,9 @@ local Module = {}
 		end		
 		count.Value = count.Value -1
 		wait()
-		gui.Visible = false
+		--gui.Visible = false
 		Module.HoldRake(player, true)
-		
+		debounce = false
 		plot.ClickDetector.MaxActivationDistance = 0
 		wait(respawntime)
 
@@ -162,8 +163,10 @@ local Module = {}
 					if results[i].Parent.Parent:FindFirstChild("Owner").Value == player.Name then  -- make sure it's the right player's truck 
 						check = true
 					end
-				else 
-					-- not using this for storage anymore but soon for orderboard						
+				elseif zone == workspace.Orderboard.SellZone then
+					if results[i].Parent.Parent:FindFirstChild("Owner").Value == player.Name then  -- make sure it's the right player's truck 
+						check = true
+					end					
 				end
 			end	
 		end			
@@ -205,17 +208,23 @@ local Module = {}
 
 	-- Equip the Rake tool
 	function Module.HoldWater(player, hold)
+		print("MS HoldWater start")
 		local playerModel = workspace:WaitForChild(player.Name)
 		local humanoid = playerModel:FindFirstChildOfClass("Humanoid")
 		if humanoid then
+			print("MS HoldWater humanoid true")
 			if hold == false then
+				print("MS HoldWater hold false")
 				local tool = player.Backpack:FindFirstChild("Watering Can")
-				if tool then			
+				if tool then		
+					print("MS HoldWater tool true")	
 					humanoid:EquipTool(tool)
 				end	
 			else
+				print("MS HoldWater hold true")
 				local tool = playerModel:FindFirstChild("Watering Can")
 				if tool then	
+					print("MS HoldWater tool true")	
 					humanoid:UnequipTools()
 				end			
 			end
@@ -261,7 +270,11 @@ local Module = {}
 		end
 	end
 
-	
+	function Module.OpenBookcase(player)
+		game:GetService("ReplicatedStorage"):WaitForChild("OpenBookcase"):FireClient(player) -- Sends to OpenGui OpenBookcase()
+	end
+
+
 	-- find a vector for shifting a model using some base part to get orientation of which way farm is facing  
 	function Module.ShiftModel(base, x,y,z)
 		local spin = base.Orientation
@@ -309,14 +322,14 @@ local Module = {}
 	end
 
 
-	function Module.PlaceFarmTiles(player, numPlots)
+	function Module.PlaceFarmTiles(player)
 		local farm = workspace:FindFirstChild(player.Name .. "_Farm")
-		local numPlots = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues.NumPlots
+		local numPlots = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues.NumPlots.Value
 		local oldPlot = farm.FarmTiles
 		local location = oldPlot.PrimaryPart.CFrame
 		local shiftVector = Module.ShiftModel(farm.Decorations.Grass, -4, 0, 0)
-		oldPlot:Destroy()	
-		local newPlot = game.ServerStorage:FindFirstChild("FarmTiles" .. numPlots.Value):Clone()
+		oldPlot:Destroy()		
+		local newPlot = game.ServerStorage:FindFirstChild("FarmTiles" .. numPlots):Clone()
 		newPlot.Parent = farm
 		newPlot.Name = "FarmTiles"	
 		newPlot:SetPrimaryPartCFrame(location + shiftVector)
@@ -329,16 +342,21 @@ local Module = {}
 	function Module.SetClickDetectors(farmPlot)  -- Comes from PlayerAddRemove PlayerAdded() and Miscellanious newPlotTiles()
 		local plot = farmPlot:GetChildren()
 		for c = 1,#plot do
-			if plot[c].Name == "Dirt Tile" then 		
+			if plot[c].Name == "Dirt Tile" then 
 				plot[c].ClickDetector.mouseClick:connect(function(player) Module.CollectVeggie(player, plot[c]) end);	
 			end
 		end
 	end
 
 
-	function Module.PlaceTruck(player, farm, owned)  -- called by GamePass script
+	function Module.PlaceTruck(player, owned)  -- called by GamePass script
+		local farm = workspace:WaitForChild(player.Name .. "_Farm")	
 		local location = farm.Decorations.Driveway.CFrame
 		local truck = nil
+		if farm:FindFirstChild("Truck") then
+			print("MS PlaceTruck destroy")
+			farm:FindFirstChild("Truck"):Destroy()
+		end
 		if owned == true then
 			truck = game.ServerStorage:FindFirstChild("FarmTruck"):Clone()
 			-- Put player's name on their truck
@@ -392,4 +410,24 @@ local Module = {}
 		hudMoney.Text = "Money: " .. player:WaitForChild("PlayerValues").Money.Value
 	end
 
+
+	function Module.ShowBench(player)
+		local bench = workspace:WaitForChild(player.Name .. "_Farm").Decorations.Bench
+		bench.Main.Transparency = 0
+		bench.Main.CanCollide = true
+		bench:WaitForChild("Seat1").CanCollide = true
+		bench:WaitForChild("Seat2").CanCollide = true		
+	end
+
+	
+	function Module.CheckInvTotal(player)
+		wait(2)
+		local inventory = game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory
+		local total = 0
+		local invList = inventory:GetChildren()
+		for t=2,#invList do
+			total = total + invList[t].Value
+		end
+		game:GetService("ReplicatedStorage"):WaitForChild("UpdateInventoryTotal"):FireServer(total)  -- Goes to Misc UpdatePlayerInventoryTotals()
+	end
 return Module

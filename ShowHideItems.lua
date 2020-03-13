@@ -4,12 +4,14 @@ local hudGui = player.PlayerGui:WaitForChild("HUDGui")
 local inventory = game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory
 local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
 local storeLevels = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").StorageLevels.Value:split(",")
+local helperModule = require(workspace.ModuleScript)
+
 
 -- Show Inventory
 local list = invGui.Storage.Items:GetChildren()
 local list3 = player.PlayerGui:WaitForChild("MarketGui").Market.Items:GetChildren()
-while true do
-	local total = inventory.Total.Value
+while wait(1) do
+	local total = inventory.Total.Value 
 	for i=1,#list do
 		if list[i].ClassName == "TextLabel" then
 			local quantity = inventory:FindFirstChild(list[i].Name).Value
@@ -25,6 +27,7 @@ while true do
 		end
 	end	
 	hudGui.HUD.Money.Text = "Money: " .. values.Money.Value
-	invGui.Storage.NumItems.Text = total .. "/"	.. storeLevels[values.StorageLevel.Value]		
-	wait(1)
+	invGui.Storage.NumItems.Text = total .. "/"	.. storeLevels[values.StorageLevel.Value]
 end
+
+

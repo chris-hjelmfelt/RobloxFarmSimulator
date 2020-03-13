@@ -13,7 +13,7 @@ game.Players.PlayerAdded:connect(function(player)
 	local v1 = Instance.new("IntValue") 
     v1.Name = "Potatoes"
 	v1.Parent = playerValues  
-    v1.Value = 10 
+    v1.Value = 0 
     
 	local v2 = Instance.new("IntValue") 
     v2.Name = "Carrots"
