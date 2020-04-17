@@ -4,7 +4,7 @@ debounce = false
 local Module = {}	
 	function Module.CollectVeggie(player, plot)  -- called from SetClickDetectors() below
 		if player.Name == plot.Parent.Parent:FindFirstChild("Owner").Value and debounce == false then
-			debounce = true		
+			debounce = true						
 			if plot.Plant.Leaf.Transparency == 0 then
 				debounce = false
 				Module.PickPlant(player, plot)	-- pick them
@@ -13,9 +13,13 @@ local Module = {}
 			elseif plot.Weed.Weed.Transparency == 0 then	
 				Module.RakePlant(player, plot)	-- rake them
 			else	
-				debounce = false
+				debounce = false	
+				if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 1 then 
+					game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial						
+				end
 				game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds"):FireClient(player, plot)  -- Goes to PickVeggies localScript ChooseSeeds()
 			end	
+			
 		end
 	end
 
@@ -60,11 +64,12 @@ local Module = {}
 		timerBar.Size = UDim2.new(0, 200, 0, 15)
 		plot.BrickColor = BrickColor.new("Dirt brown")
 		wait()
-		print("MS WaterPlant before")
 		Module.HoldWater(player, true)
-		debounce = false
-		print("MS WaterPlant after")		
-		plot:WaitForChild("ClickDetector").MaxActivationDistance = 0		
+		debounce = false	
+		plot:WaitForChild("ClickDetector").MaxActivationDistance = 0
+		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 3 then 	
+			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial		
+		end
 		wait(3)
 		local weeds = plot.Weed:GetChildren()
 		for i=1,#weeds do
@@ -107,6 +112,9 @@ local Module = {}
 		Module.HoldRake(player, true)
 		debounce = false
 		plot.ClickDetector.MaxActivationDistance = 0
+		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 4 then 
+			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial	
+		end
 		wait(respawntime)
 
 		if count.Value <= 0 then
@@ -149,6 +157,9 @@ local Module = {}
 		else  -- Tell them their storage is full
 			game:GetService("ReplicatedStorage"):WaitForChild("Warning"):FireClient(player, "Storage Full")
 		end		
+		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 5 then 
+			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial	
+		end
 	end
 
 	-- Used to see if the players truck is close enough to their storage   
@@ -208,23 +219,17 @@ local Module = {}
 
 	-- Equip the Rake tool
 	function Module.HoldWater(player, hold)
-		print("MS HoldWater start")
 		local playerModel = workspace:WaitForChild(player.Name)
 		local humanoid = playerModel:FindFirstChildOfClass("Humanoid")
 		if humanoid then
-			print("MS HoldWater humanoid true")
 			if hold == false then
-				print("MS HoldWater hold false")
 				local tool = player.Backpack:FindFirstChild("Watering Can")
 				if tool then		
-					print("MS HoldWater tool true")	
 					humanoid:EquipTool(tool)
 				end	
 			else
-				print("MS HoldWater hold true")
 				local tool = playerModel:FindFirstChild("Watering Can")
-				if tool then	
-					print("MS HoldWater tool true")	
+				if tool then		
 					humanoid:UnequipTools()
 				end			
 			end

@@ -1,6 +1,5 @@
     local Players = game:GetService("Players")	
 	local serverStorage = game:GetService("ServerStorage")
-	--local upgradeArray = {5,10,15,20,25,30,35,40,45,50} -- money needed for the next level
 	local xpArray = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").NextLevelXP.Value:split(",")  -- xp needed for each level
 	local playerLevel = nil	
 	local helperModule = require(workspace.ModuleScript)
@@ -22,7 +21,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("PlantSeeds").OnServerEvent:Co
 -----------------
 function OpenStorage(player, farm)
 	if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open stoage or truck
-		game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis LocalScript
+		game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis  OpenStorage()
 	end
 end
 
@@ -33,7 +32,7 @@ end
 ----------------------
 function OpenUpgradeFarm(player, farm)
 	if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open
-		game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgradeFarm"):FireClient(player)  -- Goes to OpenGuis localscript -- Sends to OpenGuis LocalScript
+		game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgradeFarm"):FireClient(player)  -- Goes to OpenGuis OpenUpgradeFarmGui()
 	end
 end
 
@@ -42,6 +41,7 @@ end
 -- Main
 ------------------------
 Players.PlayerAdded:Connect(function(player)
+	print("PAR PlayerAdded")
 	-- Show Welcome Gui
 	player.PlayerGui:WaitForChild("TutorialGui"):WaitForChild("Welcome").Visible = true  -- if you stop showing this make sure you enable HUD because closing this enables it
 	
@@ -49,7 +49,7 @@ Players.PlayerAdded:Connect(function(player)
 	local playerModel = workspace:WaitForChild(player.Name)
 	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")	
 	local farm = PlaceFarm(player)
-	-- fARM TILES ADDED AT the bottom of this page
+	
 	-- truck is added in MS called by gamepass
 	helperModule.PlaceStorageModel(player)
 	
@@ -91,7 +91,10 @@ Players.PlayerAdded:Connect(function(player)
 			invItem.Text = inventory:WaitForChild(list[i].Name).Value
 		end
 	end
+	
+	values:WaitForChild("Tutorial").Value = 0
 
+	helperModule.PlaceFarmTiles(player)
 	-- Add this value to keep track of plaots
     local objectValue = Instance.new("ObjectValue")
     objectValue.Name = "ActivePlot"
@@ -125,6 +128,7 @@ end)
 
 
 function PlaceFarm(player)	
+	print("PAR PlaceFarm")
 	local spaces = workspace.Farms:GetChildren()
 	local rand = math.random(1,#spaces)
 	local location = spaces[rand].CFrame	
@@ -178,6 +182,7 @@ Players.PlayerAdded:Connect(function(player)
     level.Parent = stats 
     level.Value = player:WaitForChild("PlayerValues"):WaitForChild("Level").Value	
 
+--[[
 	-- place farm tiles
 	while wait() and farmTilesLoaded == false do
 		if workspace:FindFirstChild(player.Name .. "_Farm") and valueDataLoaded == true then
@@ -185,4 +190,5 @@ Players.PlayerAdded:Connect(function(player)
 			farmTilesLoaded = true
 		end
 	end
+--]]
 end)

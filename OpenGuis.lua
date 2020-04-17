@@ -59,8 +59,11 @@ end
 ---------------------
 function OpenStorage()	
 	invGui.Storage.Visible = true
+	if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 7 then 
+		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
+	end
 end
-game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage").OnClientEvent:Connect(OpenStorage)  -- Comes from PlayerAddRemove
+game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage").OnClientEvent:Connect(OpenStorage)  -- Comes from PlayerAddRemove  OpenStorage()
 
 
 -------------
@@ -70,6 +73,10 @@ function OpenMarket()
 	truckHere = helperModule.checkTruckHere(player, workspace.Market:WaitForChild("SellZone").Zone)
 	if truckHere == true then
 		marketGui.Market.Visible = true
+		invGui.Storage.Visible = false
+		if values.Tutorial.Value == 12 then 
+			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
+		end
 	else
 		marketGui.WarnTruck.Visible = true
 	end	
@@ -116,13 +123,13 @@ function OpenUpgradeFarmGui()
 	end
 	upgradeGui.UpgradeFarmSpace.Visible = true
 end
-game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgradeFarm").OnClientEvent:Connect(OpenUpgradeFarmGui)
+game:GetService("ReplicatedStorage"):WaitForChild("OpenUpgradeFarm").OnClientEvent:Connect(OpenUpgradeFarmGui)  -- comes from PlayerAddRemove  OpenUpgradeFarm()
 
 
 -- Purchase Farm Space Upgrade
 function UpgradeFarmSpace()
 	upgradeGui.UpgradeFarmSpace.Visible = false
-	game:GetService("ReplicatedStorage"):WaitForChild("BuyFarmSpace"):FireServer() -- Goes to PlayerAddRemove 
+	game:GetService("ReplicatedStorage"):WaitForChild("BuyFarmSpace"):FireServer() -- Goes to Miscellanious BuyUpgrade()
 end
 upgradeGui.UpgradeFarmSpace.Items.Button.MouseButton1Click:Connect(UpgradeFarmSpace)
 
@@ -194,7 +201,7 @@ function UpgradeStorage()
 			invGui.Storage.Upgrade.Visible = false
 			hudGui.Warning.Upgrade.Visible = false
 		end
-		game:GetService("ReplicatedStorage"):WaitForChild("BiggerStorage"):FireServer()
+		game:GetService("ReplicatedStorage"):WaitForChild("BiggerStorage"):FireServer()  -- goes to Miscellanious NewStorage()
 	end
 end
 upgradeGui.UpgradeStorage.Items.Button.MouseButton1Click:Connect(UpgradeStorage)

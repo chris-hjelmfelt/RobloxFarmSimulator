@@ -19,6 +19,9 @@ function HarvestPlants(plot)
 	storage.Amount.Text = storage.Amount.Text + 1
 	player.PlayerGui:WaitForChild("HUDGui").HUD.Experience.Text = "Experience: " .. values.Experience.Value + 10
 	GainXP()	
+	if values.Tutorial.Value == 6 and game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory.Total.Value == 4 then  -- tutorial running and enough veggies harvested
+		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
+	end
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Experience", 10, true)  -- goes to Miscellanious script ChangePlayerValues()
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(item, 1, true)  -- goes to Miscellanious script ChangePlayerInventory()
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Total", 1, true)  -- goes to Miscellanious script ChangePlayerInventory()	
@@ -44,7 +47,9 @@ function ChooseSeeds(plot)
 			end			
 		end		
 	end
-	farmGui.PlantSeeds.Visible = true	
+	if player.PlayerGui:WaitForChild("TutorialGui").Step2.Visible == false then  -- don't show this yet during tutorial
+		farmGui.PlantSeeds.Visible = true
+	end	
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer(plot, 0, true) -- goes to Miscellanious script ChangePlayerValue()
 end
 game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds").OnClientEvent:Connect(ChooseSeeds) -- comes from MS CollectVeggie()
@@ -52,7 +57,10 @@ game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds").OnClientEvent:C
 
 function SendSeeds(seedType)  -- from click detectors below
 	local plot = players:FindFirstChild(player.Name).ActivePlot.Value	
-	game:GetService("ReplicatedStorage"):WaitForChild("PlantSeeds"):FireServer(plot, seedType) -- goes to PlayerAddRemove PlantSeeds()
+	game:GetService("ReplicatedStorage"):WaitForChild("PlantSeeds"):FireServer(plot, seedType) -- goes to PlayerAddRemove PlantSeeds() 
+	if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 2 then 
+		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial	
+	end
 	player.PlayerGui:WaitForChild("FarmGuis").PlantSeeds.Visible = false
 end
 -- Plant Seed buttons clickdetectors

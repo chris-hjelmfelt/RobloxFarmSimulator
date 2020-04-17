@@ -57,7 +57,7 @@ function BuyUpgrade(player)
 		game:GetService("ReplicatedStorage"):WaitForChild("Warning"):FireClient(player, "Sorry this upgrade isn't active yet") -- Goes to OpenGuis Warning()
 	end	
 end
-game:GetService("ReplicatedStorage"):WaitForChild("BuyFarmSpace").OnServerEvent:Connect(BuyUpgrade)
+game:GetService("ReplicatedStorage"):WaitForChild("BuyFarmSpace").OnServerEvent:Connect(BuyUpgrade)  -- comes from OpenGuis UpgradeFarmSpace()
 
 
 -------------------------
@@ -66,7 +66,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("BuyFarmSpace").OnServerEvent:
 function NewStorage(player)
 	helperModule.PlaceStorageModel(player)
 end
-game:GetService("ReplicatedStorage"):WaitForChild("BiggerStorage").OnServerEvent:Connect(NewStorage)
+game:GetService("ReplicatedStorage"):WaitForChild("BiggerStorage").OnServerEvent:Connect(NewStorage)  -- comes from OpenGuis UpgradeStorage()
 
 
 ---------------------------------------------------
@@ -85,7 +85,7 @@ function ChangePlayerValue(player, item, quantity, addBool)
 		end
 	end
 end
-game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue").OnServerEvent:Connect(ChangePlayerValue) -- this comes from localscripts  PickVeggies ChooseSeeds(), Market SellVeggies(), and Levels LevelUp()
+game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue").OnServerEvent:Connect(ChangePlayerValue) -- this comes from localscripts  PickVeggies ChooseSeeds(), Market SellVeggies(), and Levels LevelUp(), Tutorial NextAction()
 
 
 function ChangePlayerInventory(player, item, quantity, addBool)	
