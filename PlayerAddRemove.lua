@@ -20,11 +20,10 @@ game:GetService("ReplicatedStorage"):WaitForChild("PlantSeeds").OnServerEvent:Co
 -- Storage
 -----------------
 function OpenStorage(player, farm)
-	if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open stoage or truck
-		game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis  OpenStorage()
+	if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open storage 
+		game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis OpenStorage()
 	end
 end
-
 
 
 ----------------------
@@ -41,7 +40,6 @@ end
 -- Main
 ------------------------
 Players.PlayerAdded:Connect(function(player)
-	print("PAR PlayerAdded")
 	-- Show Welcome Gui
 	player.PlayerGui:WaitForChild("TutorialGui"):WaitForChild("Welcome").Visible = true  -- if you stop showing this make sure you enable HUD because closing this enables it
 	
@@ -52,24 +50,27 @@ Players.PlayerAdded:Connect(function(player)
 	
 	-- truck is added in MS called by gamepass
 	helperModule.PlaceStorageModel(player)
-	
---[[
+	if values.StorageLevel.Value >= 7 then
+		player.PlayerGui:WaitForChild("InventoryGui").Storage.Upgrade.Visible = false
+		player.PlayerGui:WaitForChild("HUDGui").Warning.Upgrade.Visible = false
+	end
+
 	if player.Name == "Erin_OShea" or "Jaylah_Everstar" then
 	-- if player.Name == "Jaylah_Everstar" then
-		values.Money.Value = 0
+		values.Money.Value = 1000
 		values.Experience.Value = 0
 		values.Level.Value = 1
 		values.NumPlots.Value = 4
 		values.StorageLevel.Value = 1
 		values.QuestProgress.Value = 1
+		values:WaitForChild("Tutorial").Value = 0
 	end
---]]
+
 	-- Show special items
 	if values.QuestProgress.Value >= 10 then
 		helperModule.ShowBench(player)
 	end
-	-- storage and truck clickdetectors
-	farm:WaitForChild("Storage").ClickDetector.mouseClick:connect(function(player) OpenStorage(player, farm) end);
+	-- truck clickdetectors
 	farm:WaitForChild("Truck").ClickDetector.mouseClick:connect(function(player) OpenStorage(player, farm) end);		
 	-- Upgrade clickdetector
 	farm:FindFirstChild("Upgrades").ClickDetector.mouseClick:connect(function(player) OpenUpgradeFarm(player, farm) end);
@@ -90,9 +91,8 @@ Players.PlayerAdded:Connect(function(player)
 			local invItem = invGui.Storage.Items:FindFirstChild(list[i].Name).Amount
 			invItem.Text = inventory:WaitForChild(list[i].Name).Value
 		end
-	end
+	end	
 	
-	values:WaitForChild("Tutorial").Value = 0
 
 	helperModule.PlaceFarmTiles(player)
 	-- Add this value to keep track of plaots
@@ -128,7 +128,6 @@ end)
 
 
 function PlaceFarm(player)	
-	print("PAR PlaceFarm")
 	local spaces = workspace.Farms:GetChildren()
 	local rand = math.random(1,#spaces)
 	local location = spaces[rand].CFrame	

@@ -72,7 +72,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("BiggerStorage").OnServerEvent
 ---------------------------------------------------
 -- Add or Subtract from PlayerValues and Inventory
 ---------------------------------------------------
-function ChangePlayerValue(player, item, quantity, addBool)	
+function ChangePlayerValue(player, item, quantity, addBool)
 	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")		
 	if quantity == 0 then   -- set which plot is clicked -- Comes from PickVeggies ChooseSeeds()
 		game:GetService("Players"):WaitForChild(player.Name).ActivePlot.Value = item

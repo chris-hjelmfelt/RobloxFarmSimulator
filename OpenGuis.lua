@@ -6,6 +6,7 @@ local hudGui = player.PlayerGui:WaitForChild("HUDGui")
 local spawnGui = player.PlayerGui:WaitForChild("RespawnGui")
 local upgradeGui = player.PlayerGui:WaitForChild("UpgradeGui")
 local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
+local tutGui = player.PlayerGui:WaitForChild("TutorialGui")
 local gameValues = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts")
 local each = gameValues:GetChildren()  -- list of items 
 local truckHere = false
@@ -135,9 +136,9 @@ upgradeGui.UpgradeFarmSpace.Items.Button.MouseButton1Click:Connect(UpgradeFarmSp
 
 
 -- Set items in Gui for buying more storage space and open the Gui
-function OpenUpgradeStorageGui()
-	print("OpenGuis OpenUpgradeStorageGui")
+function OpenUpgradeStorageGui()	
 	local upGui = upgradeGui.UpgradeStorage.Items
+	hudGui.Warning.Visible = false
 	if values.StorageLevel.Value == 1 then
 		upGui.List1.Text = "Store " .. storeLevels[2] .. " Items - " .. storeCost[1] .. " Coins"
 		upGui.List2.Text = "Store " .. storeLevels[3] .. " Items"
@@ -196,7 +197,7 @@ function UpgradeStorage()
 		game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("StorageLevel", 1, true)  -- Goes to Misc ChangePlayerValue()
 		game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", cost, false)  -- Goes to Misc ChangePlayerValue()	
 		upgradeGui.UpgradeConfirm.Items.List1.Text = "You have increased your available storage space!"
-		upgradeGui.UpgradeConfirm.Visible = true		
+		upgradeGui.UpgradeConfirm.Visible = true				
 		if values.StorageLevel.Value >= 7 then
 			invGui.Storage.Upgrade.Visible = false
 			hudGui.Warning.Upgrade.Visible = false
@@ -222,6 +223,17 @@ function OpenHelp()
 	helpGui.Help1.Visible = true
 end
 hudGui.HUD.Help.MouseButton1Click:Connect(OpenHelp)
+
+
+----------------
+-- Lock Screen
+----------------
+function LockScreen()
+	if tutGui.LockScreen.Main.Code.Text == "55555Blox" then
+		tutGui.LockScreen.Visible = false
+	end
+end
+tutGui.LockScreen.Enter.MouseButton1Click:Connect(LockScreen)
 
 
 ----------------

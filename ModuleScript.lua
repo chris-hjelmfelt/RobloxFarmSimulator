@@ -285,45 +285,72 @@ local Module = {}
 		local spin = base.Orientation
 		if spin.Y == 0 then  -- Place new farm tiles, farms can face any direction so check to see which way to shift the new tiles
 			return Vector3.new(x,y,z)
-		elseif spin.Y == 180 then
+		elseif spin.Y == 180 or spin.Y == -180 then
 			return Vector3.new(-x,y,-z)
 		elseif spin.Y == 90 then
 			return Vector3.new(z,y,-x)
 		elseif spin.Y == -90 then
 			return Vector3.new(-z,y,x)
 		else
-			print("Misc newPlots fell through")
+			print("MS Shift Model fell through - spin.Y isn't found")
 			return Vector3.new(-x,y,z)			
 		end
 	end
 
 	function Module.PlaceStorageModel(player)
-		local farm = workspace:FindFirstChild(player.Name .. "_Farm")
+		local farm = workspace:WaitForChild(player.Name .. "_Farm")
 		local storeLevel = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues").StorageLevel
-		local oldModel = farm.Storage
-		local location = oldModel.PrimaryPart.CFrame
-		local newModel = nil	
-		
+		local oldModel = farm:WaitForChild("Storage")
+		local location = farm:WaitForChild("StoragePlacement")
+		local ModelOne = nil	
+		local ModelTwo = nil
+		local ModelThree = nil
 		if storeLevel.Value < 6 then
-			newModel = game.ServerStorage:FindFirstChild("Storage" .. storeLevel.Value):Clone()
-			newModel:SetPrimaryPartCFrame(location)
-			oldModel:Destroy()
-		elseif storeLevel.Value == 6 then
-			newModel = game.ServerStorage:FindFirstChild("Shed"):Clone()
-			local shiftVector = Module.ShiftModel(oldModel.PrimaryPart, 0, -2, 0)
-			newModel:SetPrimaryPartCFrame(location + shiftVector)
-			oldModel:Destroy()
-		elseif storeLevel.Value == 7 then
-			newModel = game.ServerStorage:FindFirstChild("Silo"):Clone()
-			local shiftVector = Module.ShiftModel(oldModel.PrimaryPart, -10.2, 4.45, -3)
-			newModel:SetPrimaryPartCFrame((location * CFrame.Angles(0,0, math.rad(90)))+ shiftVector)
-		elseif storeLevel.Value >= 8 then
-			newModel = game.ServerStorage:FindFirstChild("Silo"):Clone()
-			local shiftVector = Module.ShiftModel(oldModel.PrimaryPart, -10.2, 4.45, 3)
-			newModel:SetPrimaryPartCFrame((location * CFrame.Angles(0,0, math.rad(90)))+ shiftVector)
+			ModelOne = game.ServerStorage:FindFirstChild("Storage" .. storeLevel.Value):Clone()
+			ModelOne.Parent = farm
+			ModelOne.Name = "Storage"	
+			ModelOne:SetPrimaryPartCFrame(location.CFrame)
+		elseif storeLevel.Value >= 6 then
+			ModelOne = game.ServerStorage:FindFirstChild("Shed"):Clone()
+			ModelOne.Parent = farm
+			ModelOne.Name = "Storage"	
+			local shiftVector = Module.ShiftModel(location, 0, -2, 0)
+			ModelOne:SetPrimaryPartCFrame(location.CFrame + shiftVector)
 		end
-		newModel.Parent = farm
-		newModel.Name = "Storage"	
+		if storeLevel.Value >= 7 then
+			ModelTwo = game.ServerStorage:FindFirstChild("Silo"):Clone()			
+			ModelTwo.Parent = farm
+			ModelTwo.Name = "Silo1"	
+			local shiftVector = Module.ShiftModel(location, -10.2, 2.45, -3)
+			ModelTwo:SetPrimaryPartCFrame((location.CFrame * CFrame.Angles(0,0, math.rad(90)))+ shiftVector)
+		end
+		if storeLevel.Value >= 8 then
+			ModelThree = game.ServerStorage:FindFirstChild("Silo"):Clone()
+			ModelThree.Parent = farm
+			ModelThree.Name = "Silo2"	
+			local shiftVector = Module.ShiftModel(location, -10.2, 2.45, 3)
+			ModelThree:SetPrimaryPartCFrame((location.CFrame * CFrame.Angles(0,0, math.rad(90)))+ shiftVector)
+		end			
+		oldModel:Destroy()
+		ModelOne.ClickDetector.mouseClick:connect(function(player)  
+			if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open storage 
+				game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis OpenStorage()
+			end
+		end);
+		if ModelTwo then
+			ModelTwo.ClickDetector.mouseClick:connect(function(player)  
+				if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open storage 
+					game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis OpenStorage()
+				end
+			end);
+		end
+		if ModelThree then
+			ModelThree.ClickDetector.mouseClick:connect(function(player)  
+				if farm:FindFirstChild("Owner").Value == player.Name then    -- only owner can open storage 
+					game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage"):FireClient(player) -- Sends to OpenGuis OpenStorage()
+				end
+			end);
+		end
 	end
 
 

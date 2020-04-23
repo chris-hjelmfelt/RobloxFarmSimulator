@@ -19,7 +19,7 @@ function HarvestPlants(plot)
 	storage.Amount.Text = storage.Amount.Text + 1
 	player.PlayerGui:WaitForChild("HUDGui").HUD.Experience.Text = "Experience: " .. values.Experience.Value + 10
 	GainXP()	
-	if values.Tutorial.Value == 6 and game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory.Total.Value == 4 then  -- tutorial running and enough veggies harvested
+	if values.Tutorial.Value == 6 and game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory.Total.Value > 3 then  -- tutorial running and enough veggies harvested
 		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
 	end
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Experience", 10, true)  -- goes to Miscellanious script ChangePlayerValues()

@@ -6,13 +6,16 @@ local helpGui = player.PlayerGui:WaitForChild("HelpGui")
 local arrow = nil
 local arrow2 = nil
 local showArrow = false
-local step = 1
+local step = values.Tutorial.Value
 
+if player.Name == "Erin_OShea" then
+	step = 1
+end
 
 function ShowTutGui()
 	tutGui.Skip.SkipButton.Visible = true
 	if step == 1 then  -- just after Welcome, tells them to click on a farm tile
-		wait(1.5)
+		wait(1)
 		helpGui.Restart.Visible = false
 		ShowIndicator()
 	elseif step == 2 then  -- show arrow over farm tiles and tell them to choose seeds 
@@ -25,7 +28,9 @@ function ShowTutGui()
 		wait(1.5)
 	elseif step == 6 then  -- tells them to grow 4 more
 		showArrow = false
+		arrow.Transparency = 1
 	elseif step == 7 then  -- tells them to look in storage
+		arrow.Transparency = 0
 		arrow.CFrame = farm.Storage.PrimaryPart.CFrame + Vector3.new(0,7,0)
 		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("Blink"):Fire() -- starts Blink() later on this page
 	elseif step == 8 then  -- tells where to see their total
@@ -39,6 +44,10 @@ function ShowTutGui()
 		arrow.Transparency = 1	
 		arrow2 = game.ReplicatedStorage.Arrow3:Clone()
 		arrow2.Parent = farm
+		arrow2.Anchored = true
+		
+		arrow2.CFrame = farm:WaitForChild("Truck").PrimaryPart.CFrame + Vector3.new(0,6,-13)
+		arrow2.Orientation = Vector3.new(90, 0, 0)
 		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial").ShowTruckArrow:Fire()  -- goes to ArrowPosition
 	elseif step == 12 then  -- tells them to click on the market building
 		-- nothing extra
@@ -48,11 +57,13 @@ function ShowTutGui()
 		-- nothing extra
 	elseif step == 15 then  -- End tutorial message
 		tutGui.Skip.SkipButton.Visible = false
-	end	
-	tutGui:FindFirstChild("Step" .. step).Visible = true		
-	player.PlayerGui:WaitForChild("FarmGuis").PlantSeeds.Visible = false
-	step = step + 1
-	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Tutorial", 1, true)  -- Goes to Misc ChangePlayerValue()
+	end
+	if step < 16 then	-- possible to get here with step = 16
+		tutGui:FindFirstChild("Step" .. step).Visible = true		
+		player.PlayerGui:WaitForChild("FarmGuis").PlantSeeds.Visible = false
+		step = step + 1
+		game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Tutorial", 1, true)  -- Goes to Misc ChangePlayerValue()
+	end
 end 
 -- TutBindable comes from ModuleScript CollectVeggie(), WaterPlant(), RakePlant(), PickPlant(), TruckActive (inside of Trucks)
 -- OpenGuis OpenStorage(), and OpenMarket()
@@ -97,8 +108,9 @@ function SkipTutorial()
 	for i=1,15 do
 		tutGui:FindFirstChild("Step" .. i).Visible = false
 	end
-	wait(1)
+	wait(.5)
 	tutGui.Skip.SkipButton.Visible = false
+	tutGui.Skip.Message.Visible = false
 end
 tutGui.Skip.Message.Yes.MouseButton1Click:Connect(SkipTutorial)
 
@@ -108,7 +120,7 @@ function DontSkip()
 	tutGui.Skip.SkipButton.Visible = true
 	tutGui.Skip.Message.Visible = false
 end
-tutGui.Skip.Message.Yes.MouseButton1Click:Connect(DontSkip)
+tutGui.Skip.Message.No.MouseButton1Click:Connect(DontSkip)
 
 
 -- Blinking arrow above farm tiles, storage or truck
