@@ -58,14 +58,14 @@ Players.PlayerAdded:Connect(function(player)
 
 	-- values for testing
 	if player.Name == "Erin_OShea" or player.Name == "Jaylah_Everstar" then
-		values.Money.Value = 1000
-		values.Experience.Value = 0
-		values.Level.Value = 1
-		values.NumPlots.Value = 4
-		values.StorageLevel.Value = 1
-		values.QuestProgress.Value = 1
-		--values.Tutorial.Value = 1
-		values.PlantsHarvested = 0
+		values:WaitForChild("Money").Value = 1000
+		values:WaitForChild("Experience").Value = 0
+		values:WaitForChild("Level").Value = 1
+		values:WaitForChild("NumPlots").Value = 4
+		values:WaitForChild("StorageLevel").Value = 1
+		values:WaitForChild("QuestProgress").Value = 1
+		--values:WaitForChild("Tutorial").Value = 1
+		values:WaitForChild("PlantsHarvested").Value = 0
 	end
 
 	-- Fix tutorial error
@@ -146,10 +146,6 @@ function PlaceFarm(player)
 	local rand = math.random(1,#spaces)
 	local location = spaces[rand].CFrame	
 	spaces[rand]:Destroy()
-	-- Use this code to test a specific farm location - name the grass tile "Farm1" and comment out code above
-	--local old = workspace.Farms:FindFirstChild("Farm1")
-	--local location = old.CFrame
-	--old:Destroy()
 
 	local newPlot = game.ServerStorage:FindFirstChild("FarmModel"):Clone()
 	newPlot.Parent = workspace
@@ -194,14 +190,4 @@ Players.PlayerAdded:Connect(function(player)
  	level.Name = "Level"
     level.Parent = stats 
     level.Value = player:WaitForChild("PlayerValues"):WaitForChild("Level").Value	
-
---[[
-	-- place farm tiles
-	while wait() and farmTilesLoaded == false do
-		if workspace:FindFirstChild(player.Name .. "_Farm") and valueDataLoaded == true then
-			helperModule.PlaceFarmTiles(player)
-			farmTilesLoaded = true
-		end
-	end
---]]
 end)
