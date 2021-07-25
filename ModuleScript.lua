@@ -9,12 +9,12 @@ local Module = {}
 				debounce = false
 				Module.PickPlant(player, plot)	-- pick them
 			elseif plot.BrickColor.Name == "Brown" then			
-				Module.WaterPlant(player, plot)			
+				Module.WaterPlant(player, plot)	 -- water them
 			elseif plot.Weed.Weed.Transparency == 0 then	
 				Module.RakePlant(player, plot)	-- rake them
-			else	
+			else	-- plant them (choose seeds)
 				debounce = false	
-				if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 1 then 
+				if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 2 then 
 					game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial						
 				end
 				game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds"):FireClient(player, plot)  -- Goes to PickVeggies localScript ChooseSeeds()
@@ -67,7 +67,7 @@ local Module = {}
 		Module.HoldWater(player, true)
 		debounce = false	
 		plot:WaitForChild("ClickDetector").MaxActivationDistance = 0
-		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 3 then 	
+		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 4 then 	
 			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial		
 		end
 		wait(3)
@@ -112,7 +112,7 @@ local Module = {}
 		Module.HoldRake(player, true)
 		debounce = false
 		plot.ClickDetector.MaxActivationDistance = 0
-		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 4 then 
+		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 5 then 
 			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial	
 		end
 		wait(respawntime)
@@ -157,7 +157,7 @@ local Module = {}
 		else  -- Tell them their storage is full
 			game:GetService("ReplicatedStorage"):WaitForChild("Warning"):FireClient(player, "Storage Full")
 		end		
-		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 5 then 
+		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 6 then 
 			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial	
 		end
 	end

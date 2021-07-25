@@ -1,6 +1,6 @@
 local player = game.Players.LocalPlayer
 local levelGui = player.PlayerGui:WaitForChild("LevelGui").LevelUp
-local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
+local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
 local xpArray = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").NextLevelXP.Value:split(",")  -- xp needed for each level
 local plantList = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts"):GetChildren()  -- list of items 
 

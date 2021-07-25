@@ -114,6 +114,13 @@ end
 game:GetService("ReplicatedStorage"):WaitForChild("ChangeLeaderstats").OnServerEvent:Connect(ChangeLeaderstats) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies() and Levels LevelUp()
 
 
+function ResetTutorial(player)
+	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")	
+	values.Tutorial.Value = 1
+end
+game:GetService("ReplicatedStorage").Tutorial:WaitForChild("ResetTut").OnServerEvent:Connect(ResetTutorial) -- this comes from Tutorial
+
+
 --------------------
 -- Teleport Buttons
 --------------------

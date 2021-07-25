@@ -1,8 +1,8 @@
 local player = game.Players.LocalPlayer
 local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local hudGui = player.PlayerGui:WaitForChild("HUDGui")
-local inventory = game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory
-local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
+local inventory = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerInventory")
+local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
 local storeLevels = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").StorageLevels.Value:split(",")
 local helperModule = require(workspace.ModuleScript)
 

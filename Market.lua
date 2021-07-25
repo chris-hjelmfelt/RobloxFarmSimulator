@@ -1,6 +1,7 @@
 local player = game.Players.LocalPlayer
 local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local marketGui = player.PlayerGui:WaitForChild("MarketGui")
+local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
 local truck = invGui.Storage
 local truckHere = false
 local helperModule = require(workspace.ModuleScript)
@@ -35,7 +36,9 @@ function SellVeggies()
 		marketGui.Sold.Message1.Text = "You sold " .. totalItems .. " items"
 		marketGui.Sold.Message2.Text = "For " .. totalCoins .. " Coins"
 		marketGui.Sold.Visible = true
-		marketGui.Market.Visible = false
+		if values.Tutorial.Value < 14 or values.Tutorial.Value > 15 then
+			marketGui.Market.Visible = false
+		end
 	end
 	-- Make sure inventory totals are still correct
 	helperModule.CheckInvTotal(player)

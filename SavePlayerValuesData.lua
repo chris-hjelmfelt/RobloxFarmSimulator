@@ -5,7 +5,6 @@ local TIME_BETWEEN_SAVES = 60	-- In seconds (WARNING): Do not put this lower tha
 local PRINT_OUTPUT = false		-- Will print saves and loads in the output
 local SAFE_SAVE = true			-- Upon server shutdown, holds server open to save all data
 ---------------------------------
-
 local players = game:GetService("Players")
 local dataStoreService = game:GetService("DataStoreService")
 local playerValuesData = dataStoreService:GetDataStore("PlayerValues")
@@ -32,19 +31,19 @@ end
 
 local function LoadData(player)
 	if player.userId < 0 then return end
-	player:WaitForChild("PlayerValues")
+	
 	local playerValuesStats = playerValuesData:GetAsync(player.userId)
 	for i, stat in pairs(playerValuesStats) do
 		local currentStat = player.PlayerValues:FindFirstChild(stat[1])
 		if not currentStat then return end
 		currentStat.Value = stat[2]
 	end
+
 	-- update leaderstats
 	game:GetService("ReplicatedStorage"):WaitForChild("LoadedValues"):Fire(player) -- goes to PlayerAddRemove DataLoaded()
 	wait()
 	player:WaitForChild("leaderstats").Level.Value = player:WaitForChild("PlayerValues"):WaitForChild("Level").Value	
 end
-
 
 players.PlayerAdded:connect(LoadData)
 players.PlayerRemoving:connect(SaveData)

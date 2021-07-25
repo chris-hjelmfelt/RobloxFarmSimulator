@@ -60,7 +60,7 @@ end
 ---------------------
 function OpenStorage()	
 	invGui.Storage.Visible = true
-	if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 7 then 
+	if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 8 then 
 		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
 	end
 end
@@ -75,7 +75,7 @@ function OpenMarket()
 	if truckHere == true then
 		marketGui.Market.Visible = true
 		invGui.Storage.Visible = false
-		if values.Tutorial.Value == 12 then 
+		if values.Tutorial.Value == 13 then 
 			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
 		end
 	else
@@ -223,17 +223,6 @@ function OpenHelp()
 	helpGui.Help1.Visible = true
 end
 hudGui.HUD.Help.MouseButton1Click:Connect(OpenHelp)
-
-
-----------------
--- Lock Screen
-----------------
-function LockScreen()
-	if tutGui.LockScreen.Main.Code.Text == "55555Blox" then
-		tutGui.LockScreen.Visible = false
-	end
-end
-tutGui.LockScreen.Enter.MouseButton1Click:Connect(LockScreen)
 
 
 ----------------

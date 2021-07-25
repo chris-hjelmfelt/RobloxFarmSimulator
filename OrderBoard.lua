@@ -1,7 +1,7 @@
 local player = game.Players.LocalPlayer
 local orderGui = player.PlayerGui:WaitForChild("OrderGui"):WaitForChild("OrderBoard").Items
-local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
-local inventory = game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory
+local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
+local inventory = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerInventory")
 local plants = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts")
 local orderTimer1 = 0  -- timer for a new order to appear
 local orderTimer2 = 0

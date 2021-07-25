@@ -3,7 +3,7 @@ local player = game.Players.LocalPlayer
 local players = game:GetService("Players")	
 local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local truck = invGui.Storage
-local values = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues
+local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
 local plantCosts = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts")
 local helperModule = require(workspace.ModuleScript)
 local each = plantCosts:GetChildren()  -- list of items 
@@ -19,12 +19,14 @@ function HarvestPlants(plot)
 	storage.Amount.Text = storage.Amount.Text + 1
 	player.PlayerGui:WaitForChild("HUDGui").HUD.Experience.Text = "Experience: " .. values.Experience.Value + 10
 	GainXP()	
-	if values.Tutorial.Value == 6 and game:GetService("Players"):FindFirstChild(player.Name).PlayerInventory.Total.Value > 3 then  -- tutorial running and enough veggies harvested
-		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
-	end
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Experience", 10, true)  -- goes to Miscellanious script ChangePlayerValues()
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(item, 1, true)  -- goes to Miscellanious script ChangePlayerInventory()
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Total", 1, true)  -- goes to Miscellanious script ChangePlayerInventory()	
+	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("PlantsHarvested", 1, true)  -- goes to Miscellanious script ChangePlayerValues()
+	-- Tutorial
+	if values.Tutorial.Value == 7 and values.PlantsHarvested.Value > 4 then  -- tutorial running and enough veggies harvested
+		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
+	end
 	-- Make sure inventory totals are still correct
 	helperModule.CheckInvTotal(player)
 end
@@ -47,7 +49,7 @@ function ChooseSeeds(plot)
 			end			
 		end		
 	end
-	if player.PlayerGui:WaitForChild("TutorialGui").Step2.Visible == false then  -- don't show this yet during tutorial
+	if values.Tutorial.Value >= 3 then  -- don't show this yet during tutorial
 		farmGui.PlantSeeds.Visible = true
 	end	
 	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer(plot, 0, true) -- goes to Miscellanious script ChangePlayerValue()
@@ -58,7 +60,7 @@ game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds").OnClientEvent:C
 function SendSeeds(seedType)  -- from click detectors below
 	local plot = players:FindFirstChild(player.Name).ActivePlot.Value	
 	game:GetService("ReplicatedStorage"):WaitForChild("PlantSeeds"):FireServer(plot, seedType) -- goes to PlayerAddRemove PlantSeeds() 
-	if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 2 then 
+	if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 3 then 
 		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial	
 	end
 	player.PlayerGui:WaitForChild("FarmGuis").PlantSeeds.Visible = false

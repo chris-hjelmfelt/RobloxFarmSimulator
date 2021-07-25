@@ -8,9 +8,6 @@ local arrow2 = nil
 local showArrow = false
 local step = values.Tutorial.Value
 
-if player.Name == "Erin_OShea" then
-	step = 1
-end
 
 function ShowTutGui()
 	tutGui.Skip.SkipButton.Visible = true
@@ -18,7 +15,7 @@ function ShowTutGui()
 		wait(1)
 		helpGui.Restart.Visible = false
 		ShowIndicator()
-	elseif step == 2 then  -- show arrow over farm tiles and tell them to choose seeds 
+	elseif step == 2 then  -- tell them to choose seeds 
 		-- nothing extra
 	elseif step == 3 then  -- tells them to water the tile
 		wait(1)
@@ -79,8 +76,7 @@ function RestartTutorial()
 	if arrow then	arrow:destroy()  end
 	if arrow2 then	arrow2:destroy()  end
 	showArrow = false
-	local needSubtract = values.Tutorial.Value 
-	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Tutorial", needSubtract, false)  -- Goes to Misc ChangePlayerValue()
+	game:GetService("ReplicatedStorage").Tutorial:WaitForChild("ResetTut"):FireServer()  -- Goes to Misc ResetTutorial()
 	step = 1	
 	helpGui.Help1.Visible = false
 	helpGui.Restart.Visible = true

@@ -6,7 +6,7 @@ game.Players.PlayerAdded:connect(function(player)
 	local level = Instance.new("IntValue")
  	level.Name = "Level"
     level.Parent = playerValues 
-    level.Value = 1  -- starts at 1
+    level.Value = 1   -- starts at 1
 	
 	local xp = Instance.new("IntValue")
  	xp.Name = "Experience"
@@ -21,7 +21,7 @@ game.Players.PlayerAdded:connect(function(player)
 	local tut = Instance.new("IntValue")
 	tut.Name = "Tutorial"
 	tut.Parent = playerValues 
-    tut.Value = 1	-- starts at 1
+    tut.Value = 1	 -- starts at 1
 	
 	local trees = Instance.new("IntValue") 
     trees.Name = "TreesAvailable" 
@@ -36,15 +36,30 @@ game.Players.PlayerAdded:connect(function(player)
 	local numPlots = Instance.new("IntValue") 
     numPlots.Name = "NumPlots" 
     numPlots.Parent = playerValues
-    numPlots.Value = 4  -- starts at 4
+    numPlots.Value = 4   -- starts at 4
 	
 	local store = Instance.new("IntValue") 
     store.Name = "StorageLevel" 
     store.Parent = playerValues
-    store.Value = 1  -- starts at 1
+    store.Value = 1   -- starts at 1
 
 	local quest = Instance.new("IntValue") 
     quest.Name = "QuestProgress" 
     quest.Parent = playerValues
-    quest.Value = 1   -- starts at 1
+	quest.Value = 1    -- starts at 1
+	
+	local harvests = Instance.new("IntValue") 
+	harvests.Name = "PlantsHarvested" 
+	harvests.Parent = playerValues
+	harvests.Value = 0    -- starts at 0
+
+	local broken = Instance.new("BoolValue")
+	broken.Name = "BrokenData"
+	broken.Parent = playerValues
+	broken.Value = false  -- if true test data overwrote their progress :(
+
+	local broken2 = Instance.new("IntValue")
+	broken2.Name = "BrokenData2"
+	broken2.Parent = playerValues
+	broken2.Value = 0  -- 0 is default, it means they haven't gone through the change screen 
 end)

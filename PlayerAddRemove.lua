@@ -55,21 +55,35 @@ Players.PlayerAdded:Connect(function(player)
 		player.PlayerGui:WaitForChild("HUDGui").Warning.Upgrade.Visible = false
 	end
 
-	if player.Name == "Erin_OShea" or "Jaylah_Everstar" then
-	-- if player.Name == "Jaylah_Everstar" then
+
+	-- values for testing
+	if player.Name == "Erin_OShea" or player.Name == "Jaylah_Everstar" then
 		values.Money.Value = 1000
 		values.Experience.Value = 0
 		values.Level.Value = 1
 		values.NumPlots.Value = 4
 		values.StorageLevel.Value = 1
 		values.QuestProgress.Value = 1
-		values:WaitForChild("Tutorial").Value = 0
+		--values.Tutorial.Value = 1
+		values.PlantsHarvested = 0
+	end
+
+	-- Fix tutorial error
+	if values:WaitForChild("Tutorial").Value == 0 then
+		values:WaitForChild("Tutorial").Value = 1
+		values.WaitForChild("BrokenData").Value = true
+	end
+	
+	-- Check for exit game in mid tutorial
+	if values:WaitForChild("Tutorial").Value > 1 and values:WaitForChild("Tutorial").Value < 16 then
+		values:WaitForChild("Tutorial").Value = 16		
 	end
 
 	-- Show special items
 	if values.QuestProgress.Value >= 10 then
 		helperModule.ShowBench(player)
 	end
+
 	-- truck clickdetectors
 	farm:WaitForChild("Truck").ClickDetector.mouseClick:connect(function(player) OpenStorage(player, farm) end);		
 	-- Upgrade clickdetector
@@ -95,7 +109,7 @@ Players.PlayerAdded:Connect(function(player)
 	
 
 	helperModule.PlaceFarmTiles(player)
-	-- Add this value to keep track of plaots
+	-- Add this value to keep track of plots
     local objectValue = Instance.new("ObjectValue")
     objectValue.Name = "ActivePlot"
     objectValue.Value = nil
