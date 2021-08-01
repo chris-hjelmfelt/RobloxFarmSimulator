@@ -59,7 +59,7 @@ function ShowTutGui()
 		tutGui:FindFirstChild("Step" .. step).Visible = true		
 		player.PlayerGui:WaitForChild("FarmGuis").PlantSeeds.Visible = false
 		step = step + 1
-		game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Tutorial", 1, true)  -- Goes to Misc ChangePlayerValue()
+		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutChange"):FireServer(step)  -- Goes to Miscellanious - State Events
 	end
 end 
 -- TutBindable comes from ModuleScript CollectVeggie(), WaterPlant(), RakePlant(), PickPlant(), TruckActive (inside of Trucks)
@@ -76,7 +76,7 @@ function RestartTutorial()
 	if arrow then	arrow:destroy()  end
 	if arrow2 then	arrow2:destroy()  end
 	showArrow = false
-	game:GetService("ReplicatedStorage").Tutorial:WaitForChild("ResetTut"):FireServer()  -- Goes to Misc ResetTutorial()
+	game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutChange"):FireServer(1)  -- Goes to Miscellanious - State Events
 	step = 1	
 	helpGui.Help1.Visible = false
 	helpGui.Restart.Visible = true
@@ -99,8 +99,7 @@ function SkipTutorial()
 	if arrow then	arrow:destroy()  end
 	if arrow2 then	arrow2:destroy()  end
 	showArrow = false
-	local needAdd = 16 - values.Tutorial.Value 
-	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Tutorial", needAdd, true)  -- Goes to Misc ChangePlayerValue()
+	game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutChange"):FireServer(16)   -- Goes to Miscellanious - State Events
 	for i=1,15 do
 		tutGui:FindFirstChild("Step" .. i).Visible = false
 	end

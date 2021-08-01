@@ -1,6 +1,7 @@
 local players = game:GetService("Players")	
 local serverStorage = game:GetService("ServerStorage")
 local helperModule = require(workspace.ModuleScript)
+local stateModule = require(workspace.StateModule)
 local farmSpaceCost = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").FarmSpaceCost.Value:split(",")
 
 
@@ -114,13 +115,6 @@ end
 game:GetService("ReplicatedStorage"):WaitForChild("ChangeLeaderstats").OnServerEvent:Connect(ChangeLeaderstats) -- this comes from localscripts PickVeggies HarvestPlants() and Market SellVeggies() and Levels LevelUp()
 
 
-function ResetTutorial(player)
-	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")	
-	values.Tutorial.Value = 1
-end
-game:GetService("ReplicatedStorage").Tutorial:WaitForChild("ResetTut").OnServerEvent:Connect(ResetTutorial) -- this comes from Tutorial
-
-
 --------------------
 -- Teleport Buttons
 --------------------
@@ -148,18 +142,11 @@ game:GetService("ReplicatedStorage"):WaitForChild("TeleportToMarket").OnServerEv
 
 
 
---[[ 
-------------------------------------------
--- Test placement of all farms
-------------------------------------------
-local farms = workspace.Farms:GetChildren()
-for i=1,#farms do
-	local location = farms[i].CFrame	
-	farms[i]:Destroy()	
-	local newPlot = game.ServerStorage:FindFirstChild("FarmModel"):Clone()
-	newPlot.Parent = workspace.Farms
-	newPlot.Name = "FarmModel"		
-	newPlot:SetPrimaryPartCFrame(location) 
-	newPlot:FindFirstChild("Owner").Value = "X"
-end
---]]
+
+
+-----------------------------------------
+-- State Events     (go to StateModule)
+-----------------------------------------
+game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutChange").OnServerEvent:Connect(stateModule.TutorialChanges)
+game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set").OnServerEvent:Connect(stateModule.Quest01_Set)
+

@@ -8,79 +8,79 @@ local helperModule = require(workspace.ModuleScript)
 -- Quests
 -------------
 function OpenQuests(who)	
-	if values.QuestProgress.Value == 1 then
+	if values.Quest01_Progress.Value == 1 then
 		if who == "Devon" then
 			questGui.Devon1_1.Visible = true
-			values.QuestProgress.Value = 2
+			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(2)  -- Goes to Miscellanious - State Events
 		end
-	elseif values.QuestProgress.Value == 2 and inventory.Potatoes.Value >= 6 then
+	elseif values.Quest01_Progress.Value == 2 and inventory.Potatoes.Value >= 6 then
 		if who == "Devon" then
 			questGui.Devon1_2.Visible = true
 		elseif who == "Stan" then
 			questGui.Stan1_2.Visible = true	
 			game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Potatoes", 6, false)
 			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", 20, true)
-			values.QuestProgress.Value = 3
+			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(3)  -- Goes to Miscellanious - State Events
 			helperModule.GainCoins(player, 20)
 		end
-	elseif values.QuestProgress.Value == 2 and inventory.Potatoes.Value < 6 then
+	elseif values.Quest01_Progress.Value == 2 and inventory.Potatoes.Value < 6 then
 		if who == "Devon" then
 			questGui.Devon1_2.Visible = true
 		elseif who == "Stan" then
 			questGui.Stan1_1.Visible = true	
 		end
-	elseif values.QuestProgress.Value == 3 then 
+	elseif values.Quest01_Progress.Value == 3 then 
 		if who == "Devon" then
 			questGui.Devon2_1.Visible = true
-			values.QuestProgress.Value = 4
+			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(4)  -- Goes to Miscellanious - State Events
 		end
-	elseif values.QuestProgress.Value == 4 then 
+	elseif values.Quest01_Progress.Value == 4 then 
 		if who == "Devon" then
 			questGui.Devon2_2.Visible = true
 		elseif who == "Marie" then
 			questGui.Marie1_1.Visible = true	
-			values.QuestProgress.Value = 5
+			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(5)  -- Goes to Miscellanious - State Events
 		end
-	elseif values.QuestProgress.Value == 5 then 
+	elseif values.Quest01_Progress.Value == 5 then 
 		if who == "Devon" then
 			questGui.Devon3_1.Visible = true
-			values.QuestProgress.Value = 6
+			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(6)  -- Goes to Miscellanious - State Events
 			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", 20, true)
 			helperModule.GainCoins(player, 20)
 		end
-	elseif values.QuestProgress.Value == 6 then 
+	elseif values.Quest01_Progress.Value == 6 then 
 		if who == "Devon" then
 			questGui.Devon3_1.Visible = true
 		elseif who == "Emma" then
 			questGui.Emma1_1.Visible = true	
-			values.QuestProgress.Value = 7
+			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(7)  -- Goes to Miscellanious - State Events
 		end
-	elseif values.QuestProgress.Value == 7 then 
+	elseif values.Quest01_Progress.Value == 7 then 
 		if who == "Devon" then
 			questGui.Devon4_1.Visible = true
 			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", 20, true)
 			helperModule.GainCoins(player, 20)
-			values.QuestProgress.Value = 8
+			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(8)  -- Goes to Miscellanious - State Events
 		end
-	elseif values.QuestProgress.Value == 8 then 
+	elseif values.Quest01_Progress.Value == 8 then 
 		if who == "Devon" then
 			questGui.Devon4_1.Visible = true
 		elseif who == "Wyatt" then
 			questGui.Wyatt1_1.Visible = true	
-			values.QuestProgress.Value = 9
+			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(9)  -- Goes to Miscellanious - State Events
 		end
-	elseif values.QuestProgress.Value == 9 then 
+	elseif values.Quest01_Progress.Value == 9 then 
 		if who == "Devon" then
 			questGui.Devon4_1.Visible = true
 		elseif who == "Wyatt" and inventory.Corn.Value >= 20 then
 			questGui.Wyatt2_1.Visible = true	
 			game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Corn", 20, false)
 			helperModule.ShowBench(player)
-			values.QuestProgress.Value = 10			
+			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(10)  -- Goes to Miscellanious - State Events		
 		elseif who == "Wyatt" then
 			questGui.Wyatt4_5.Visible = true
 		end
-	elseif values.QuestProgress.Value == 10 then 
+	elseif values.Quest01_Progress.Value == 10 then 
 		if who == "Devon" then
 			questGui.Devon5_1.Visible = true
 		end

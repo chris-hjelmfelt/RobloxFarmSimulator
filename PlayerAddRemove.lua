@@ -2,6 +2,7 @@
 	local serverStorage = game:GetService("ServerStorage")
 	local xpArray = workspace:WaitForChild("GameValues"):WaitForChild("GameMisc").NextLevelXP.Value:split(",")  -- xp needed for each level
 	local playerLevel = nil	
+	local stateModule = require(workspace.StateModule)
 	local helperModule = require(workspace.ModuleScript)
 	local valueDataLoaded = false
 	local farmTilesLoaded = false
@@ -40,12 +41,26 @@ end
 -- Main
 ------------------------
 Players.PlayerAdded:Connect(function(player)
+	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")
+	
 	-- Show Welcome Gui
-	player.PlayerGui:WaitForChild("TutorialGui"):WaitForChild("Welcome").Visible = true  -- if you stop showing this make sure you enable HUD because closing this enables it
+	player.PlayerGui:WaitForChild("Welcome"):WaitForChild("Welcome").Visible = true  -- if you stop showing this make sure you enable HUD because closing this enables it
+	
+	-- values for testing
+	if player.Name == "Jaylah_Everstar" then
+		stateModule.TestingValues(player)
+	end
+	
+	-- Set temporary change values (remove if resetting all player values)
+	fixValues(player)	
+
+	-- Check for exit game in mid tutorial
+	if values:WaitForChild("Tutorial").Value > 1 and values:WaitForChild("Tutorial").Value < 16 then
+		stateModule.TutorialChanges(16)	
+	end
 	
 	-- Setup farm
-	local playerModel = workspace:WaitForChild(player.Name)
-	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")	
+	local playerModel = workspace:WaitForChild(player.Name)	
 	local farm = PlaceFarm(player)
 	
 	-- truck is added in MS called by gamepass
@@ -53,31 +68,8 @@ Players.PlayerAdded:Connect(function(player)
 	if values.StorageLevel.Value >= 7 then
 		player.PlayerGui:WaitForChild("InventoryGui").Storage.Upgrade.Visible = false
 		player.PlayerGui:WaitForChild("HUDGui").Warning.Upgrade.Visible = false
-	end
+	end	
 
-
-	-- values for testing
-	if player.Name == "Erin_OShea" or player.Name == "Jaylah_Everstar" then
-		values:WaitForChild("Money").Value = 1000
-		values:WaitForChild("Experience").Value = 0
-		values:WaitForChild("Level").Value = 1
-		values:WaitForChild("NumPlots").Value = 4
-		values:WaitForChild("StorageLevel").Value = 1
-		values:WaitForChild("QuestProgress").Value = 1
-		--values:WaitForChild("Tutorial").Value = 1
-		values:WaitForChild("PlantsHarvested").Value = 0
-	end
-
-	-- Fix tutorial error
-	if values:WaitForChild("Tutorial").Value == 0 then
-		values:WaitForChild("Tutorial").Value = 1
-		values.WaitForChild("BrokenData").Value = true
-	end
-	
-	-- Check for exit game in mid tutorial
-	if values:WaitForChild("Tutorial").Value > 1 and values:WaitForChild("Tutorial").Value < 16 then
-		values:WaitForChild("Tutorial").Value = 16		
-	end
 
 	-- Show special items
 	if values.QuestProgress.Value >= 10 then
@@ -191,3 +183,21 @@ Players.PlayerAdded:Connect(function(player)
     level.Parent = stats 
     level.Value = player:WaitForChild("PlayerValues"):WaitForChild("Level").Value	
 end)
+
+
+-- Changed player values that need to be checked for update
+-- If I remove all previous saves and reset everything this function is trash
+function fixValues(player)
+	local values = game:GetService("Players"):WaitForChild(player.Name):WaitForChild("PlayerValues")
+
+	-- Fix tutorial error
+	if values:WaitForChild("Tutorial").Value == 0 then
+		stateModule.TutorialChanges(1)	
+		values:WaitForChild("BrokenData").Value = true
+	end
+
+	-- Fix quest 1 name
+	if (values:WaitForChild("Quest01_Progress").Value == 1) then
+		values:WaitForChild("Quest01_Progress").Value = values:WaitForChild("QuestProgress").Value
+	end
+end

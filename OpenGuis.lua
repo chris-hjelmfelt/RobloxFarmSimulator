@@ -1,4 +1,5 @@
 local player = game.Players.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
 local invGui = player.PlayerGui:WaitForChild("InventoryGui")
 local marketGui = player.PlayerGui:WaitForChild("MarketGui")
 local helpGui = player.PlayerGui:WaitForChild("HelpGui")
@@ -17,6 +18,29 @@ local farmSpaceCost = workspace.GameValues.GameMisc.FarmSpaceCost.Value:split(",
 local farm = workspace:WaitForChild(player.Name .. "_Farm")
 
 
+-----------------------------
+-- Set guis at start of game
+------------------------------
+-- Hide Backpack items and Teleport buttons
+StarterGui:SetCore("TopbarEnabled", false)
+game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
+hudGui.HUD.Teleports.Visible = false
+
+
+-- Make sure Inventory total is correct
+helperModule.CheckInvTotal(player)
+
+
+-- Storage upgrade buttons visible or not
+if values.StorageLevel.Value < 8 then
+	invGui.Storage.Upgrade.Visible = true
+	hudGui.Warning.Upgrade.Visible = true
+else
+	invGui.Storage.Upgrade.Visible = false
+	hudGui.Warning.Upgrade.Visible = false
+end
+
+
 ---------------------
 -- Respawn Truck
 ---------------------
@@ -30,26 +54,6 @@ end
 spawnGui.Respawn.MouseButton1Click:Connect(Respawn);
 
 
------------------------------
--- Set guis at start of game
-------------------------------
--- Hide Backpack items and Teleport buttons
-game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
-hudGui.HUD.Teleports.Visible = false
-
--- Make sure Inventory total is correct
-helperModule.CheckInvTotal(player)
-
--- Storage upgrade buttons visible or not
-if values.StorageLevel.Value < 8 then
-	invGui.Storage.Upgrade.Visible = true
-	hudGui.Warning.Upgrade.Visible = true
-else
-	invGui.Storage.Upgrade.Visible = false
-	hudGui.Warning.Upgrade.Visible = false
-end
-
-
 -----------------------------------------------
 -- Quests and Shopping have their own scripts
 -----------------------------------------------
@@ -61,7 +65,7 @@ end
 function OpenStorage()	
 	invGui.Storage.Visible = true
 	if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 8 then 
-		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
+		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial Gui - Tutorial
 	end
 end
 game:GetService("ReplicatedStorage"):WaitForChild("OpenStorage").OnClientEvent:Connect(OpenStorage)  -- Comes from PlayerAddRemove  OpenStorage()
@@ -76,7 +80,7 @@ function OpenMarket()
 		marketGui.Market.Visible = true
 		invGui.Storage.Visible = false
 		if values.Tutorial.Value == 13 then 
-			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial
+			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial Gui - Tutorial
 		end
 	else
 		marketGui.WarnTruck.Visible = true
