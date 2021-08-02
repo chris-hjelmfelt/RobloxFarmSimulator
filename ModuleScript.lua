@@ -3,6 +3,7 @@ debounce = false
 
 local Module = {}	
 	function Module.CollectVeggie(player, plot)  -- called from SetClickDetectors() below
+		local values = game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues")
 		if player.Name == plot.Parent.Parent:FindFirstChild("Owner").Value and debounce == false then
 			debounce = true						
 			if plot.Plant.Leaf.Transparency == 0 then
@@ -14,7 +15,7 @@ local Module = {}
 				Module.RakePlant(player, plot)	-- rake them
 			else	-- plant them (choose seeds)
 				debounce = false	
-				if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 2 then 
+				if values.Tutorial.Value == 2 then 
 					game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial						
 				end
 				game:GetService("ReplicatedStorage"):WaitForChild("ChooseSeeds"):FireClient(player, plot)  -- Goes to PickVeggies localScript ChooseSeeds()
@@ -157,7 +158,7 @@ local Module = {}
 		else  -- Tell them their storage is full
 			game:GetService("ReplicatedStorage"):WaitForChild("Warning"):FireClient(player, "Storage Full")
 		end		
-		if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 6 then 
+		if values.Tutorial.Value == 6 then 
 			game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutRemote"):FireClient(player)  -- goes to Tutorial	
 		end
 	end

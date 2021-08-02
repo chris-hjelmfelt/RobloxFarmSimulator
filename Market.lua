@@ -20,9 +20,8 @@ function SellVeggies()
 					helperModule.GainCoins(player, addMoney)
 					totalItems = totalItems + itemsSold[i].TextBox.Text
 					totalCoins = totalCoins + addMoney
-					game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", addMoney, true)  -- Goes to Misc ChangePlayerValue()
-					game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(itemsSold[i].Name, itemsSold[i].TextBox.Text, false)  -- Goes to Misc ChangePlayerInventory()
-					game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Total", itemsSold[i].TextBox.Text, false)  -- Goes to Misc ChangePlayerInventory()
+					game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("MoneySet"):FireServer(addMoney, true)  -- Goes to Miscellanious - State Events
+					game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("InventorySet"):FireServer(itemsSold[i].Name, itemsSold[i].TextBox.Text, false)  -- Goes to Miscellanious - State Events
 					marketGui.Market.Items:FindFirstChild(itemsSold[i].Name).Amount.Text = marketGui.Market.Items:FindFirstChild(itemsSold[i].Name).Amount.Text - itemsSold[i].TextBox.Text
 					itemsSold[i].TextBox.Text = 0
 				end
@@ -32,7 +31,7 @@ function SellVeggies()
 		end
 	end
 	if totalCoins > 0 then
-		player.PlayerGui:WaitForChild("HUDGui").HUD.Money.Text = game:GetService("Players"):FindFirstChild(player.Name).PlayerValues.Money.Value
+		player.PlayerGui:WaitForChild("HUDGui").HUD.Money.Text = values.Money.Value
 		marketGui.Sold.Message1.Text = "You sold " .. totalItems .. " items"
 		marketGui.Sold.Message2.Text = "For " .. totalCoins .. " Coins"
 		marketGui.Sold.Visible = true
@@ -44,40 +43,4 @@ function SellVeggies()
 	helperModule.CheckInvTotal(player)
 end
 marketGui:WaitForChild("Market").Sell.MouseButton1Click:Connect(SellVeggies)
-
-
---[[
-
--- Put items from storage into the basket to go to market
-function TransferToTruck()
-	
-		local textBoxes = marketGui.Market.Items:GetChildren()
-		for i = 1,#textBoxes do
-			if tonumber(textBoxes[i].TextBox.Text) and tonumber(textBoxes[i].TextBox.Text) > 0 then -- make sure user only entered numbers
-				if (tonumber(textBoxes[i]:FindFirstChild("Amount").Text) >= tonumber(textBoxes[i].TextBox.Text)) then  -- if they have the items
-					textBoxes[i]:FindFirstChild("Amount").Text = textBoxes[i]:FindFirstChild("Amount").Text - textBoxes[i].TextBox.Text
-					truck.Items:FindFirstChild(textBoxes[i].Name).Amount.Text = truck.Items:FindFirstChild(textBoxes[i].Name).Amount.Text + textBoxes[i].TextBox.Text
-					textBoxes[i].TextBox.Text = 0
-				end
-			end
-		end
-		
-end
-invGui.Storage.Ready.MouseButton1Click:Connect(TransferToTruck)
-
-
-
--- Move items from truck into storage
-function TransferToTruck()
-	local zone = workspace:FindFirstChild(player.Name .. "_Farm").LoadingZone
-	truckHere = helperModule.checkTruckHere(player, zone)
-	if truckHere == true then
-		local cargo = invGui.Truck.Items:GetChildren()
-		for j = 1,#cargo do
-			cargo[j].Amount.Text = 0
-		end
-	end		
-end
-invGui.Truck.Return.MouseButton1Click:Connect(TransferToTruck)
---]]
 

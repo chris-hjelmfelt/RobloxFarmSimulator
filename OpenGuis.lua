@@ -64,7 +64,7 @@ spawnGui.Respawn.MouseButton1Click:Connect(Respawn);
 ---------------------
 function OpenStorage()	
 	invGui.Storage.Visible = true
-	if game:GetService("Players"):FindFirstChild(player.Name):WaitForChild("PlayerValues").Tutorial.Value == 8 then 
+	if values.Tutorial.Value == 8 then 
 		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial Gui - Tutorial
 	end
 end
@@ -198,8 +198,8 @@ function UpgradeStorage()
 	local cost = tonumber(storeCost[values.StorageLevel.Value+1])
 	if values.Money.Value > cost then
 		upgradeGui.UpgradeStorage.Visible = false
-		game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("StorageLevel", 1, true)  -- Goes to Misc ChangePlayerValue()
-		game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", cost, false)  -- Goes to Misc ChangePlayerValue()	
+		game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("StorageLevelSet"):FireServer(1)  -- Goes to Miscellanious - State Events
+		game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("MoneySet"):FireServer(cost, false)  -- Goes to Miscellanious - State Events
 		upgradeGui.UpgradeConfirm.Items.List1.Text = "You have increased your available storage space!"
 		upgradeGui.UpgradeConfirm.Visible = true				
 		if values.StorageLevel.Value >= 7 then

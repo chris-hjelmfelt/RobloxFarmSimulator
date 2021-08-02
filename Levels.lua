@@ -7,7 +7,7 @@ local plantList = workspace:WaitForChild("GameValues"):WaitForChild("PlantCosts"
 function LevelUp()
 	local level = values.Level.Value	
 	if level <= 10 then
-		game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Level", 1, true) -- goes to Misc ChangePlayerValue()
+		game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("LevelSet"):FireServer(level + 1)  -- Goes to Miscellanious - State Events
 		game:GetService("ReplicatedStorage"):WaitForChild("ChangeLeaderstats"):FireServer() -- goes to Misc ChangeLeaderstats()
 		LevelUpEffects()		
 		if level < 10 then
@@ -16,7 +16,6 @@ function LevelUp()
 			player.PlayerGui:WaitForChild("HUDGui").HUD.NextLevel.Text2.Text = "coming soon"
 		end
 		ShowLevelGui(level + 1)
-		AddNewItems(level)
 	else
 		player.PlayerGui:WaitForChild("LevelGui").Warning.Visible = true
 		print("Levelup error - shouldn't ever hit this")
@@ -40,12 +39,6 @@ function ShowLevelGui(level)
 		levelGui.Additional.Visible = false
 	end
 	levelGui.Visible = true
-end
-
-
-function AddNewItems(level)	
-	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("SeedsAvailable", 1, true) -- Goes to Misc ChangePlayerValue()
-	-- later levels need trees, animals, etc.
 end
 
 

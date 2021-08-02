@@ -33,6 +33,12 @@ game.Players.PlayerAdded:connect(function(player)
     store.Parent = playerValues
     store.Value = 1   -- starts at 1
 
+	local seeds = Instance.new("IntValue") 
+    seeds.Name = "SeedsAvailable" 
+    seeds.Parent = playerValues
+    seeds.Value = 1   -- starts at 1
+
+
 	local trees = Instance.new("IntValue") 
 	trees.Name = "TreesAvailable" 
 	trees.Parent = playerValues

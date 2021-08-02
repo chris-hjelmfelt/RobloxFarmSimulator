@@ -15,14 +15,14 @@ local debounce4 = false
 -- get veggie
 function HarvestPlants(plot)		
 	local item = plot.CropType.Value
-	local storage = invGui.Storage.Items:FindFirstChild(item)	
+	local storage = invGui.Storage.Items:FindFirstChild(item)
+	local xpAmount = 10	
 	storage.Amount.Text = storage.Amount.Text + 1
-	player.PlayerGui:WaitForChild("HUDGui").HUD.Experience.Text = "Experience: " .. values.Experience.Value + 10
+	player.PlayerGui:WaitForChild("HUDGui").HUD.Experience.Text = "Experience: " .. values.Experience.Value + xpAmount
 	GainXP()	
-	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Experience", 10, true)  -- goes to Miscellanious script ChangePlayerValues()
-	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(item, 1, true)  -- goes to Miscellanious script ChangePlayerInventory()
-	game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Total", 1, true)  -- goes to Miscellanious script ChangePlayerInventory()	
-	game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("PlantsHarvested", 1, true)  -- goes to Miscellanious script ChangePlayerValues()
+	game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("XPSet"):FireServer(xpAmount)  -- Goes to Miscellanious - State Events
+	game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("InventorySet"):FireServer(item, 1, true)  -- Goes to Miscellanious - State Events
+	game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("PlantsHarvestedSet"):FireServer(1)  -- Goes to Miscellanious - State Events
 	-- Tutorial
 	if values.Tutorial.Value == 7 and values.PlantsHarvested.Value > 4 then  -- tutorial running and enough veggies harvested
 		game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutBindable"):Fire()  -- goes to Tutorial

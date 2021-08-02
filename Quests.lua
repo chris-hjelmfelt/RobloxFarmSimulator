@@ -18,8 +18,8 @@ function OpenQuests(who)
 			questGui.Devon1_2.Visible = true
 		elseif who == "Stan" then
 			questGui.Stan1_2.Visible = true	
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Potatoes", 6, false)
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", 20, true)
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("InventorySet"):FireServer("Potatoes", 6, false)  -- Goes to Miscellanious - State Events
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("MoneySet"):FireServer(20, true)  -- Goes to Miscellanious - State Events
 			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(3)  -- Goes to Miscellanious - State Events
 			helperModule.GainCoins(player, 20)
 		end
@@ -45,7 +45,7 @@ function OpenQuests(who)
 		if who == "Devon" then
 			questGui.Devon3_1.Visible = true
 			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(6)  -- Goes to Miscellanious - State Events
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", 20, true)
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("MoneySet"):FireServer(20, true)  -- Goes to Miscellanious - State Events
 			helperModule.GainCoins(player, 20)
 		end
 	elseif values.Quest01_Progress.Value == 6 then 
@@ -58,7 +58,7 @@ function OpenQuests(who)
 	elseif values.Quest01_Progress.Value == 7 then 
 		if who == "Devon" then
 			questGui.Devon4_1.Visible = true
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", 20, true)
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("MoneySet"):FireServer(20, true)  -- Goes to Miscellanious - State Events
 			helperModule.GainCoins(player, 20)
 			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(8)  -- Goes to Miscellanious - State Events
 		end
@@ -74,7 +74,7 @@ function OpenQuests(who)
 			questGui.Devon4_1.Visible = true
 		elseif who == "Wyatt" and inventory.Corn.Value >= 20 then
 			questGui.Wyatt2_1.Visible = true	
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer("Corn", 20, false)
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("InventorySet"):FireServer("Corn", 20, false)  -- Goes to Miscellanious - State Events
 			helperModule.ShowBench(player)
 			game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set"):FireServer(10)  -- Goes to Miscellanious - State Events		
 		elseif who == "Wyatt" then

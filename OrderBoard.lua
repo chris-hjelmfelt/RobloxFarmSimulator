@@ -42,16 +42,16 @@ function SendOrder(num)
 		if value1.Value >= tonumber(amount1.Text) and item2.Visible == false then   -- Single item order
 			local profit = math.ceil(p1 * amount1.Text) * customOrderBonus  -- calculate value of items with a bonus for custom order
 			orderGui:FindFirstChild(orderNum).Visible = false
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", profit, true)  -- goes to Miscellanious script ChangePlayerValue()
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(item1.Text, amount1.Text, false)
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("MoneySet"):FireServer(profit, true)  -- Goes to Miscellanious - State Events
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("InventorySet"):FireServer(item1.Text, amount1.Text, false)  -- Goes to Miscellanious - State Events
 			if num == "1" then orderTimer1 = timerLength elseif num == "2" then orderTimer2 = timerLength elseif num == "3" then orderTimer3 = timerLength elseif num == "4" then orderTimer4 = timerLength elseif num == "5" then orderTimer5 = timerLength end   -- set the timer for a new order
 		elseif value1.Value >= tonumber(amount1.Text) and value2.Value >= tonumber(amount2.Text) then   -- Double item order
 			local profit = math.ceil((p1 * amount1.Text) + (p2 * amount2.Text)) * customOrderBonus
 			orderGui:FindFirstChild(orderNum).Visible = false
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeValue"):FireServer("Money", profit, true)  -- goes to Miscellanious script ChangePlayerValue()
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(item1.Text, amount1.Text, false)
-			game:GetService("ReplicatedStorage"):WaitForChild("ChangeInventory"):FireServer(item2.Text, amount2.Text, false)
-			if num == "1" then orderTimer1 = timerLength elseif num == "2" then orderTimer2 = timerLength elseif num == "3" then orderTimer3 = timerLength elseif num == "4" then orderTimer4 = timerLength elseif num == "5" then orderTimer5 = timerLength end 
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("MoneySet"):FireServer(profit, true)  -- Goes to Miscellanious - State Events
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("InventorySet"):FireServer(item1.Text, amount1.Text, false)  -- Goes to Miscellanious - State Events
+			game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("InventorySet"):FireServer(item2.Text, amount2.Text, false)  -- Goes to Miscellanious - State Events
+			if num == "1" then orderTimer1 = timerLength elseif num == "2" then orderTimer2 = timerLength elseif num == "3" then orderTimer3 = timerLength elseif num == "4" then orderTimer4 = timerLength elseif num == "5" then orderTimer5 = timerLength end  -- set the timer for a new order
 		end
 	else
 		player.PlayerGui:WaitForChild("OrderGui"):WaitForChild("OrderBoard").Visible = false

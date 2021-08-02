@@ -48,8 +48,8 @@ function BuyUpgrade(player)
 	local numPlots = players:FindFirstChild(player.Name):WaitForChild("PlayerValues").NumPlots 
 	
 	if playerMoney.Value > moneyNeeded and numPlots.Value < 12 then  -- if they have the money and don't have all tiles yet
-		playerMoney.Value = playerMoney.Value - moneyNeeded
-		numPlots.Value = numPlots.Value + 2
+		stateModule.MoneySet(moneyNeeded, false)	
+		stateModule.NumPlotsSet(2)	
 		-- show new farm tile model
 		helperModule.PlaceFarmTiles(player)  	
 		-- open UpgradeGui to tell them what they get
@@ -147,6 +147,12 @@ game:GetService("ReplicatedStorage"):WaitForChild("TeleportToMarket").OnServerEv
 -----------------------------------------
 -- State Events     (go to StateModule)
 -----------------------------------------
-game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutChange").OnServerEvent:Connect(stateModule.TutorialChanges)
-game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set").OnServerEvent:Connect(stateModule.Quest01_Set)
+game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("LevelSet").OnServerEvent:Connect(stateModule.LevelSet)  -- Comes from Levels
+game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("XPSet").OnServerEvent:Connect(stateModule.ExperienceSet)  -- Comes from PickVeggies - HarvestPlants
+game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("MoneySet").OnServerEvent:Connect(stateModule.MoneySet)  -- Comes from Market, Quests, OpenGuis, OrderBoard
+game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("StorageLevelSet").OnServerEvent:Connect(stateModule.StorageLevelSet)  -- Comes from OpenGuis
+game:GetService("ReplicatedStorage"):WaitForChild("Tutorial"):WaitForChild("TutChange").OnServerEvent:Connect(stateModule.TutorialChanges)  -- Comes from Tutorial Gui - Tutorial
+game:GetService("ReplicatedStorage"):WaitForChild("Quests"):WaitForChild("Quest01_Set").OnServerEvent:Connect(stateModule.Quest01_Set)   -- Comes from Quests
+game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("PlantsHarvestedSet").OnServerEvent:Connect(stateModule.PlantsHarvestedSet)  -- Comes from PickVeggies - HarvestPlants
+game:GetService("ReplicatedStorage"):WaitForChild("StateEvents"):WaitForChild("InventorySet").OnServerEvent:Connect(stateModule.InventorySet)  -- Comes from Market, OrderBoard, PickVeggies, Quests
 
